@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 11;
+const STATE_VERSION = 12;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -46,6 +46,8 @@ const stations = {
   grill: { name: "그릴 머신", art: "🔥" },
   oven: { name: "오븐", art: "♨️" },
   "noodle-maker": { name: "면 제조기", art: "🍝" },
+  "paella-pan": { name: "파에야 팬", art: "🥘" },
+  "pizza-oven": { name: "피자 오븐", art: "🍕" },
   shaker: { name: "셰이커", art: "🍸" },
   pot: { name: "조리 냄비", art: "🍲" },
   "glass-bowl": { name: "유리 그릇", art: "🥣" },
@@ -61,7 +63,9 @@ const contentUnlockLabels = {
   "japanese-recipe-book": "일본 레시피 북",
   "italian-themed-vehicle": "이탈리아 테마 차량",
   "italian-recipe-book": "이탈리아 레시피 북",
-  "noodle-maker": "면 제조기"
+  "noodle-maker": "면 제조기",
+  "paella-pan": "파에야 팬",
+  "pizza-oven": "피자 오븐"
 };
 const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", pork: "돼지·양고기", beef: "소고기 파생품", vegetable: "채소", leafy: "잎채소", grain: "곡물", dough: "반죽 파생품", fish: "어류", shellfish: "패류", baggage: "관광객 기념품", italianHandcraft: "이탈리아 수공예", bamboo: "대나무 제품", fox: "여우 기념품", musselProducts: "홍합 파생품" };
 let stageIndexForOrders = 0;
