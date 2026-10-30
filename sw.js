@@ -1,5 +1,5 @@
-const CACHE = "merge-cooking-offline-v32";
-const ASSETS = ["./", "./index.html", "./styles.css?v=32", "./game-data.js?v=32", "./app.js?v=32", "./manifest.json", "./icon.svg", "./reference-game.png"];
+const CACHE = "merge-cooking-offline-v33";
+const ASSETS = ["./", "./index.html", "./styles.css?v=33", "./game-data.js?v=33", "./app.js?v=33", "./manifest.json", "./icon.svg", "./reference-game.png"];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())));
 self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener("fetch", event => {
