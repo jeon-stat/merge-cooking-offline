@@ -149,7 +149,10 @@ function load() {
 }
 let state = load();
 stageIndexForOrders = state.stageIndex || 0;
-unlockStageContents(state.stageIndex);
+// Older saves only recorded the current stage's unlocks. Replay every prior
+// stage once so newly added tools (such as the Noodle Maker) appear in an
+// existing offline run without resetting its board or progress.
+for (let index = 0; index <= state.stageIndex; index += 1) unlockStageContents(index);
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
 function unlockStageContents(stageIndex) {
   const stage = DATA.stages?.[stageIndex];
