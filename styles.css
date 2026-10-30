@@ -90,3 +90,4 @@ body { background:#6fc5d7; }
 .board { background:transparent; box-shadow:none; }
 .tile.empty { background:transparent !important; box-shadow:none; }
 .tile.empty::after { display:none; }
+.journal-story { padding:7px 8px; border:1px solid rgba(198,142,75,.42); border-radius:8px; background:rgba(255,247,216,.78); color:#805a3f !important; font-size:9px !important; line-height:1.45; }

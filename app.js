@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 20;
+const STATE_VERSION = 21;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -305,6 +305,10 @@ function renderJournal() {
   document.querySelector("#journalCount")?.replaceChildren(document.createTextNode(`${Math.min(state.completedOrders || 0, 35)}/35`));
   const pending = state.pendingUnlocks?.length ? ` · 대기 해금 ${state.pendingUnlocks.length}` : "";
   document.querySelector("#journalSummary")?.replaceChildren(document.createTextNode(`${current.name} · ${current.country || ""} · ${current.focus || ""}${pending}`));
+  const story = current.id === "fruit-juice-bar"
+    ? "레아는 무너진 결혼 생활을 뒤로하고 딸을 위해 앞치마를 다시 두릅니다. 세계의 식당을 함께 고치며 새로운 꿈을 시작하세요."
+    : `레아와 딸의 다음 식당 여정: ${current.name}. 주문을 완성하고 이 식당을 다음 단계로 개조하세요.`;
+  document.querySelector("#storyIntro")?.replaceChildren(document.createTextNode(`${story} 공식 스토리: ${DATA.sources?.official || DATA.target?.storySource || "https://www.merge-cooking.com/"}`));
   const stageUnlocks = (current.unlocks || []).map(key => contentUnlockLabels[key] || generatorSlots[key]?.name || stations[key]?.name || key);
   document.querySelector("#journalStageUnlocks")?.replaceChildren(document.createTextNode(stageUnlocks.length ? `이 식당에서 확인된 해금: ${stageUnlocks.join(" · ")}` : "이 식당의 신규 해금은 공개 자료에서 확인되지 않았습니다."));
   const unlocked = (state.unlockedContent || []).map(key => contentUnlockLabels[key] || generatorSlots[key]?.name || stations[key]?.name || key);

@@ -17,9 +17,11 @@ window.MERGE_COOKING_DATA = Object.freeze({
   target: Object.freeze({
     name: "Merge Cooking: Theme Restaurant",
     baseline: "iPad public build observed 2026-10-30",
+    storySource: "https://www.merge-cooking.com/",
     intentionalDifferences: Object.freeze(["infinite energy", "no generator cooldown", "no ads", "no purchases", "no account or live events"])
   }),
   sources: Object.freeze({
+    official: "https://www.merge-cooking.com/",
     fruitNut: "https://w.atwiki.jp/mergecooking/pages/17.html",
     juicer: "https://w.atwiki.jp/mergecooking/pages/32.html",
     drinkGenerator: "https://w.atwiki.jp/merge_cooking/pages/16.html",
