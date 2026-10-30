@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 18;
+const STATE_VERSION = 19;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -207,6 +207,10 @@ function dataItem(item) { return DATA.items[item] || [item, "❔"]; }
 function name(item) { return dataItem(item)[0]; }
 function art(item) { return dataItem(item)[1]; }
 function chainRank(item) { return Object.values(DATA.chains).find(chain => chain.includes(item))?.indexOf(item) + 1 || 1; }
+function generatorMaxLevel(generatorId) {
+  const levels = Object.keys(DATA.generators?.[generatorId]?.outputs || {}).map(Number).filter(Number.isFinite);
+  return levels.length ? Math.max(...levels) : (generatorSlots[generatorId]?.level || 1);
+}
 function recipeHint(item) {
   for (const [stationId, recipes] of Object.entries(DATA.recipes || {})) {
     const recipe = recipes.find(([output]) => output === item);
@@ -410,7 +414,13 @@ function moveOrMerge(from, to) {
     state.board[from] = null;
     setStatus(`${source.kind === "item" ? name(source.id) : generatorSlots[source.id].name}을(를) 옮겼습니다.`);
   } else if (source.kind === "generator" && target.kind === "generator" && source.id === target.id && (source.level || 1) === (target.level || 1)) {
-    const nextLevel = (source.level || 1) + 1;
+    const currentLevel = source.level || 1;
+    const maxLevel = generatorMaxLevel(source.id);
+    if (currentLevel >= maxLevel) {
+      selected = null;
+      return setStatus(`${generatorSlots[source.id].name}은(는) 공개 데이터 기준 최고 레벨입니다.`);
+    }
+    const nextLevel = currentLevel + 1;
     state.board[to] = { kind: "generator", id: source.id, level: nextLevel };
     state.board[from] = null;
     setStatus(`${generatorSlots[source.id].name} Lv.${source.level} + Lv.${target.level} → Lv.${nextLevel}!`);
