@@ -79,11 +79,11 @@ function freshOrder() {
   return { id: id(), item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
 }
 function initialState() {
-  return { version: STATE_VERSION, level: 35, coins: 101, gems: 20, stars: 0, stageIndex: 0, board: emptyBoard(), storage: [], pendingUnlocks: [], unlockedContent: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
+  return { version: STATE_VERSION, level: 35, coins: 101, gems: 20, stars: 0, completedOrders: 0, stageIndex: 0, board: emptyBoard(), storage: [], pendingUnlocks: [], unlockedContent: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
 }
 function migrateState(saved) {
   if (!saved || !Array.isArray(saved.board) || saved.board.length !== COLS * ROWS) return null;
-  const migrated = { ...saved, version: STATE_VERSION, storage: Array.isArray(saved.storage) ? saved.storage : [], pendingUnlocks: Array.isArray(saved.pendingUnlocks) ? saved.pendingUnlocks : [], unlockedContent: Array.isArray(saved.unlockedContent) ? saved.unlockedContent : [], orders: Array.isArray(saved.orders) ? saved.orders : [] };
+  const migrated = { ...saved, version: STATE_VERSION, completedOrders: Number.isFinite(saved.completedOrders) ? saved.completedOrders : 0, storage: Array.isArray(saved.storage) ? saved.storage : [], pendingUnlocks: Array.isArray(saved.pendingUnlocks) ? saved.pendingUnlocks : [], unlockedContent: Array.isArray(saved.unlockedContent) ? saved.unlockedContent : [], orders: Array.isArray(saved.orders) ? saved.orders : [] };
   if (migrated.level >= 3) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 3 ? null : slot);
   if (migrated.level >= 4) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 4 ? null : slot);
   return migrated;
@@ -207,7 +207,7 @@ function renderOrders() {
 function renderJournal() {
   const stages = DATA.stages || [];
   const current = stages[state.stageIndex] || DATA.firstStage;
-  document.querySelector("#journalCount")?.replaceChildren(document.createTextNode(`${Math.min(state.stageIndex + 1, stages.length)}/${stages.length}`));
+  document.querySelector("#journalCount")?.replaceChildren(document.createTextNode(`${Math.min(state.completedOrders || 0, 35)}/35`));
   const pending = state.pendingUnlocks?.length ? ` · 대기 해금 ${state.pendingUnlocks.length}` : "";
   document.querySelector("#journalSummary")?.replaceChildren(document.createTextNode(`${current.name} · ${current.country || ""} · ${current.focus || ""}${pending}`));
   if (!journalStagesNode) return;
@@ -334,6 +334,7 @@ function fulfillOrder(orderId) {
   else if (storageIndex >= 0) state.storage.splice(storageIndex, 1);
   else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다.`);
   state.coins += order.reward;
+  state.completedOrders = Math.min(35, (state.completedOrders || 0) + 1);
   state.orders[index] = freshOrder();
   setStatus(`주문 완료! 코인 ${order.reward}개를 받았습니다.`);
   navigator.vibrate?.([15, 35, 15]);
