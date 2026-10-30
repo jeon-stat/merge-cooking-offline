@@ -40,3 +40,10 @@ body { background:#6fc5d7; }
 .board-area { position:relative; inset:auto; height:auto; padding:4px 4px 8px; background:linear-gradient(180deg,rgba(255,250,224,.96),rgba(242,224,174,.92)); }.status,.board-actions { opacity:1; }.board { height:auto; min-height:0; grid-template-rows:repeat(9,1fr); gap:2px; padding:3px; border:4px solid #c99c58; border-radius:9px; background:#d6b574; box-shadow:inset 0 0 0 2px #fae8b3,0 2px 0 rgba(97,60,29,.28); }.tile { min-width:0; width:100%; height:auto; aspect-ratio:1; opacity:1; padding:1px; border:1px solid rgba(215,200,151,.66); border-radius:5px; background:linear-gradient(135deg,#fffef2,#f3ead1) !important; box-shadow:inset 0 0 0 1px rgba(255,255,255,.45); }.tile.empty { background:rgba(247,240,211,.76) !important; }.tile.selected { background:rgba(255,231,78,.72) !important; }
 .storage-panel { opacity:1; pointer-events:auto; }.bottom-dock { position:relative; inset:auto; height:58px; padding:0 10px max(5px,env(safe-area-inset-bottom)); }.bottom-dock .quest-button,.bottom-dock .home-button { opacity:1; width:auto; height:auto; border:3px solid #ffe797; background:inherit; box-shadow:var(--shadow); }
 .tile.item,.tile.generator-tile,.tile.station-tile,.tile.locked-tile { opacity:1; }
+
+/* Stage progression is compact so it does not obscure the play board. */
+.stage-strip { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; margin:3px 4px 0; padding:4px 8px; border:2px solid rgba(255,255,255,.85); border-radius:10px; background:linear-gradient(135deg,rgba(255,248,216,.95),rgba(250,224,181,.9)); box-shadow:0 2px 0 rgba(102,76,45,.16); color:#7a5237; font-size:9px; font-weight:900; }
+.stage-strip div { display:flex; align-items:baseline; gap:5px; min-width:0; }
+.stage-strip strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
+.stage-strip div span { color:#a07857; font-size:8px; }
+.stage-stars { color:#bb7624; white-space:nowrap; }

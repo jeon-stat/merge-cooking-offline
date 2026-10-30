@@ -19,7 +19,8 @@ const generatorSlots = {
   "protein-generator": { name: "프로틴 생성기", art: "🍗", level: 6 },
   "vegetable-generator": { name: "채소 생성기", art: "🥬", level: 6 },
   "grain-generator": { name: "곡물 생성기", art: "🌾", level: 6 },
-  "alcohol-generator": { name: "알코올 생성기", art: "🍷", level: 6 }
+  "alcohol-generator": { name: "알코올 생성기", art: "🍷", level: 6 },
+  ship: { name: "배", art: "🚢", level: 6 }
 };
 const stations = {
   juicer: { name: "주서기", art: "🍹" },
@@ -63,7 +64,25 @@ function load() {
 }
 let state = load();
 stageIndexForOrders = state.stageIndex || 0;
+unlockStageContents(state.stageIndex);
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function unlockStageContents(stageIndex) {
+  const stage = DATA.stages?.[stageIndex];
+  if (!stage?.unlocks) return;
+  const present = new Set(state.board.filter(Boolean).map(slot => slot.id));
+  for (const unlock of stage.unlocks) {
+    if (present.has(unlock)) continue;
+    const isGenerator = Boolean(DATA.generators?.[unlock]);
+    const isStation = Boolean(stations[unlock]);
+    if (!isGenerator && !isStation) continue;
+    const target = emptyIndex();
+    if (target < 0) break;
+    state.board[target] = isGenerator
+      ? { kind: "generator", id: unlock }
+      : { kind: "station", id: unlock, ingredients: [] };
+    present.add(unlock);
+  }
+}
 function dataItem(item) { return DATA.items[item] || [item, "❔"]; }
 function name(item) { return dataItem(item)[0]; }
 function art(item) { return dataItem(item)[1]; }
@@ -125,6 +144,10 @@ function render() {
   document.querySelector("#level").textContent = state.level;
   document.querySelector("#coins").textContent = state.coins;
   document.querySelector("#gems").textContent = state.gems;
+  const stage = DATA.stages?.[state.stageIndex] || DATA.firstStage;
+  document.querySelector("#stageName")?.replaceChildren(document.createTextNode(stage.name));
+  document.querySelector("#stageCountry")?.replaceChildren(document.createTextNode(stage.country || ""));
+  document.querySelector("#stageStars")?.replaceChildren(document.createTextNode(`${state.stars}/20`));
   document.querySelector("#storageCount").textContent = state.storage.length;
   boardNode.replaceChildren(...state.board.map((slot, index) => renderSlot(slot, index)));
   boardNode.querySelector(`[data-index="${selected}"]`)?.classList.add("selected");
@@ -215,14 +238,16 @@ function fulfillOrder(orderId) {
   else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다.`);
   state.coins += order.reward;
   state.stars += Math.max(1, Math.floor(order.reward / 4));
+  let stageMessage = "";
   if (state.stars >= 20 && state.stageIndex < (DATA.stages?.length || 1) - 1) {
     state.stageIndex += 1;
     stageIndexForOrders = state.stageIndex;
     state.stars = 0;
-    setStatus(`${DATA.stages[state.stageIndex].name}이(가) 해금되었습니다.`);
+    unlockStageContents(state.stageIndex);
+    stageMessage = `${DATA.stages[state.stageIndex].name} 해금! `;
   }
   state.orders[index] = freshOrder();
-  setStatus(`주문 완료! 코인 ${order.reward}개를 받았습니다.`);
+  setStatus(`${stageMessage}주문 완료! 코인 ${order.reward}개를 받았습니다.`);
   navigator.vibrate?.([15, 35, 15]);
   render();
 }

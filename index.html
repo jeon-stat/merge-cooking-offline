@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="icon.svg" />
-    <link rel="stylesheet" href="styles.css?v=8" />
+    <link rel="stylesheet" href="styles.css?v=9" />
     <title>Merge Cooking Offline</title>
   </head>
   <body>
@@ -23,6 +23,11 @@
         <div class="resource gem" aria-label="보석"><span aria-hidden="true">💎</span><output id="gems">20</output></div>
         <button class="shop-button" type="button" aria-label="상점">🏪</button>
       </header>
+
+      <section class="stage-strip" aria-label="현재 레스토랑 진행도">
+        <div><strong id="stageName">Fruity Juice Bar</strong><span id="stageCountry">미국</span></div>
+        <span class="stage-stars">별 <b id="stageStars">0/20</b></span>
+      </section>
 
       <section class="orders-panel" aria-labelledby="ordersTitle">
         <div class="section-heading"><h2 id="ordersTitle">주문</h2><span id="orderHint">완성 아이템을 탭해 납품하세요</span></div>
@@ -49,7 +54,7 @@
       </nav>
     </main>
     <template id="itemTemplate"><button class="tile" type="button"></button></template>
-  <script src="game-data.js?v=8"></script>
-  <script src="app.js?v=8"></script>
+  <script src="game-data.js?v=9"></script>
+  <script src="app.js?v=9"></script>
   </body>
 </html>
