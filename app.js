@@ -28,6 +28,7 @@ const generatorSlots = {
   "grain-generator": { name: "곡물 생성기", art: "🌾", level: 7 },
   "big-dough": { name: "큰 반죽", art: "🍞", level: 1 },
   "alcohol-generator": { name: "알코올 생성기", art: "🍷", level: 6 },
+  "japanese-attractions": { name: "일본의 매력", art: "⛩️", level: 6 },
   ship: { name: "배", art: "🚢", level: 6 }
 };
 const stations = {
@@ -49,7 +50,7 @@ const contentUnlockLabels = {
   "japanese-attractions": "일본 명소",
   "japanese-recipe-book": "일본 레시피 북"
 };
-const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", pork: "돼지·양고기", beef: "소고기 파생품", vegetable: "채소", leafy: "잎채소", grain: "곡물", dough: "반죽 파생품", fish: "어류", shellfish: "패류" };
+const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", pork: "돼지·양고기", beef: "소고기 파생품", vegetable: "채소", leafy: "잎채소", grain: "곡물", dough: "반죽 파생품", fish: "어류", shellfish: "패류", bamboo: "대나무 제품", fox: "여우 기념품" };
 let stageIndexForOrders = 0;
 let dragStart = null;
 let suppressNextClick = false;
