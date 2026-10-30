@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 17;
+const STATE_VERSION = 18;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -226,6 +226,7 @@ function setStatus(message) { statusNode.textContent = message; }
 function emptyIndex() { return state.board.findIndex(slot => slot === null); }
 function setSelected(index) { selected = index; }
 function isItem(slot) { return slot?.kind === "item"; }
+function isRecipeInput(slot) { return slot?.kind === "item" || (slot?.kind === "generator" && Object.values(DATA.recipes || {}).some(recipes => recipes.some(([, ingredients]) => ingredients.includes(slot.id)))); }
 function sameItems(left, right) {
   return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
 }
@@ -368,7 +369,16 @@ function tapSlot(index) {
     }
     return;
   }
-  if (slot.kind === "generator") return produce(slot.id, index);
+  if (slot.kind === "generator") {
+    if (isRecipeInput(slot)) {
+      if (selected === null) {
+        setSelected(index);
+        setStatus(`${generatorSlots[slot.id].name} 선택됨 — 조리기구에 넣거나 같은 생성기를 다시 탭해 재료를 생성하세요.`);
+        return render();
+      }
+      if (selected === index) return produce(slot.id, index);
+    } else return produce(slot.id, index);
+  }
   if (slot.kind === "item" && DATA.generators?.[slot.id]) {
     if (selected === null) {
       setSelected(index);
@@ -444,7 +454,7 @@ function produce(generatorId, sourceIndex) {
 }
 function useStation(index) {
   const station = state.board[index];
-  if (selected === null || !isItem(state.board[selected])) return setStatus(`${stations[station.id].name}에 넣을 재료를 먼저 선택하세요.`);
+  if (selected === null || !isRecipeInput(state.board[selected])) return setStatus(`${stations[station.id].name}에 넣을 재료를 먼저 선택하세요.`);
   const ingredient = state.board[selected].id;
   const candidate = [...station.ingredients, ingredient];
   const recipes = DATA.recipes[station.id] || [];
