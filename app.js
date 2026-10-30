@@ -23,6 +23,7 @@ const generatorSlots = {
   "protein-generator": { name: "프로틴 생성기", art: "🍗", level: 6 },
   "vegetable-generator": { name: "채소 생성기", art: "🥬", level: 6 },
   "grain-generator": { name: "곡물 생성기", art: "🌾", level: 6 },
+  "big-dough": { name: "큰 반죽", art: "🍞", level: 1 },
   "alcohol-generator": { name: "알코올 생성기", art: "🍷", level: 6 },
   ship: { name: "배", art: "🚢", level: 6 }
 };
@@ -33,7 +34,8 @@ const stations = {
   grill: { name: "그릴 머신", art: "🔥" },
   oven: { name: "오븐", art: "♨️" },
   shaker: { name: "셰이커", art: "🍸" },
-  pot: { name: "조리 냄비", art: "🍲" }
+  pot: { name: "조리 냄비", art: "🍲" },
+  "glass-bowl": { name: "유리 그릇", art: "🥣" }
 };
 const contentUnlockLabels = {
   "bbq-recipe-book": "BBQ 레시피북",
@@ -44,7 +46,7 @@ const contentUnlockLabels = {
   "japanese-attractions": "일본 명소",
   "japanese-recipe-book": "일본 레시피 북"
 };
-const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", vegetable: "채소", leafy: "잎채소", fish: "어류", shellfish: "패류" };
+const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", pork: "돼지·양고기", beef: "소고기 파생품", vegetable: "채소", leafy: "잎채소", grain: "곡물", dough: "반죽 파생품", fish: "어류", shellfish: "패류" };
 let stageIndexForOrders = 0;
 let dragStart = null;
 let suppressNextClick = false;
@@ -395,7 +397,9 @@ function useStation(index) {
   selected = null;
   const completed = recipes.find(([, ingredients]) => sameItems(ingredients, candidate));
   if (completed) {
-    state.board[outputIndex] = { kind: "item", id: completed[0] };
+    state.board[outputIndex] = DATA.generators?.[completed[0]]
+      ? { kind: "generator", id: completed[0], level: generatorSlots[completed[0]].level }
+      : { kind: "item", id: completed[0] };
     station.ingredients = [];
     setStatus(`${name(completed[0])} 완성!`);
     navigator.vibrate?.([15, 30, 15]);
