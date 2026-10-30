@@ -2,7 +2,7 @@
 const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
-const KEY = "merge-cooking-offline-first-stage-v2";
+const KEY = "merge-cooking-offline-public-ledger-v1";
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -13,15 +13,24 @@ const nextItem = Object.fromEntries(Object.values(DATA.chains).flatMap(chain =>
   chain.slice(0, -1).map((id, index) => [id, chain[index + 1]])
 ));
 const customerFaces = ["👩🏻", "👨🏽", "👩🏾", "🧑🏻", "👵🏼", "🧔🏾"];
-const stageOrders = ["cola", "cherry-juice", "strawberry-juice", "apple-juice", "lemon-juice", "orange-juice", "strawberry-apple-juice", "strawberry-lemon-juice"];
 const generatorSlots = {
   "drink-generator": { name: "음료 생성기", art: "🥤", level: 6 },
-  "fruit-nut-generator": { name: "과일 & 견과 생성기", art: "🍓", level: 6 }
+  "fruit-nut-generator": { name: "과일 & 견과 생성기", art: "🍓", level: 6 },
+  "protein-generator": { name: "프로틴 생성기", art: "🍗", level: 6 },
+  "vegetable-generator": { name: "채소 생성기", art: "🥬", level: 6 },
+  "grain-generator": { name: "곡물 생성기", art: "🌾", level: 6 },
+  "alcohol-generator": { name: "알코올 생성기", art: "🍷", level: 6 }
 };
 const stations = {
   juicer: { name: "주서기", art: "🍹" },
-  "chef-counter": { name: "셰프 카운터", art: "👨🏻‍🍳" }
+  "chef-counter": { name: "셰프 카운터", art: "👨🏻‍🍳" },
+  pan: { name: "프라이팬", art: "🍳" },
+  grill: { name: "그릴 머신", art: "🔥" },
+  oven: { name: "오븐", art: "♨️" },
+  shaker: { name: "셰이커", art: "🍸" },
+  pot: { name: "조리 냄비", art: "🍲" }
 };
+let stageIndexForOrders = 0;
 
 function emptyBoard() {
   const board = Array(COLS * ROWS).fill(null);
@@ -37,20 +46,23 @@ function emptyBoard() {
 }
 function id() { return crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`; }
 function freshOrder() {
-  const item = stageOrders[Math.floor(Math.random() * stageOrders.length)];
+  const stage = DATA.stages?.[stageIndexForOrders] || DATA.firstStage;
+  const pool = DATA.stageOrders?.[stage.id] || DATA.stageOrders?.[DATA.firstStage.id] || ["cola", "cherry-juice"];
+  const item = pool[Math.floor(Math.random() * pool.length)];
   return { id: id(), item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
 }
 function initialState() {
-  return { version: 4, level: 35, coins: 101, gems: 20, board: emptyBoard(), storage: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
+  return { version: 5, level: 35, coins: 101, gems: 20, stars: 0, stageIndex: 0, board: emptyBoard(), storage: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
 }
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
-    if (saved?.version === 4 && saved.board?.length === COLS * ROWS) return saved;
+    if (saved?.version === 5 && saved.board?.length === COLS * ROWS) return saved;
   } catch { /* start with a clean offline state */ }
   return initialState();
 }
 let state = load();
+stageIndexForOrders = state.stageIndex || 0;
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
 function dataItem(item) { return DATA.items[item] || [item, "❔"]; }
 function name(item) { return dataItem(item)[0]; }
@@ -171,15 +183,14 @@ function produce(generatorId) {
 }
 function useStation(index) {
   const station = state.board[index];
-  if (station.id === "chef-counter") return setStatus("셰프 카운터는 다음 공개 자료 검증 단계에서 연결합니다.");
-  if (selected === null || !isItem(state.board[selected])) return setStatus("주스 재료를 먼저 선택한 뒤 주서기를 탭하세요.");
+  if (selected === null || !isItem(state.board[selected])) return setStatus(`${stations[station.id].name}에 넣을 재료를 먼저 선택하세요.`);
   const ingredient = state.board[selected].id;
   const candidate = [...station.ingredients, ingredient];
-  const recipes = DATA.recipes.juicer;
+  const recipes = DATA.recipes[station.id] || [];
   const isPossible = recipes.some(([, ingredients]) => candidate.length <= ingredients.length && containsIngredients(ingredients, candidate));
-  if (!isPossible) return setStatus(`${name(ingredient)}은(는) 현재 주서기 조합에 넣을 수 없습니다.`);
+  if (!isPossible) return setStatus(`${name(ingredient)}은(는) ${stations[station.id].name}의 현재 레시피와 맞지 않습니다.`);
   const outputIndex = emptyIndex();
-  if (outputIndex < 0) return setStatus("완성 주스를 놓을 빈 칸이 필요합니다.");
+  if (outputIndex < 0) return setStatus("완성 아이템을 놓을 빈 칸이 필요합니다.");
   state.board[selected] = null;
   station.ingredients = candidate;
   selected = null;
@@ -203,6 +214,13 @@ function fulfillOrder(orderId) {
   else if (storageIndex >= 0) state.storage.splice(storageIndex, 1);
   else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다.`);
   state.coins += order.reward;
+  state.stars += Math.max(1, Math.floor(order.reward / 4));
+  if (state.stars >= 20 && state.stageIndex < (DATA.stages?.length || 1) - 1) {
+    state.stageIndex += 1;
+    stageIndexForOrders = state.stageIndex;
+    state.stars = 0;
+    setStatus(`${DATA.stages[state.stageIndex].name}이(가) 해금되었습니다.`);
+  }
   state.orders[index] = freshOrder();
   setStatus(`주문 완료! 코인 ${order.reward}개를 받았습니다.`);
   navigator.vibrate?.([15, 35, 15]);
