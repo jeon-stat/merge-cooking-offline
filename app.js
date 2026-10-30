@@ -189,7 +189,17 @@ function tileLabel(slot) {
 function renderSlot(slot, index, inStorage = false) {
   const node = document.querySelector("#itemTemplate").content.firstElementChild.cloneNode(true);
   node.dataset.index = index;
-  if (!slot) { node.classList.add("empty"); node.disabled = true; node.setAttribute("aria-label", "빈 칸"); return node; }
+  if (!slot) {
+    node.classList.add("empty");
+    node.setAttribute("aria-label", "빈 칸");
+    node.addEventListener("click", () => {
+      if (!inStorage && selected !== null && state.board[selected]) {
+        moveOrMerge(selected, index);
+        render();
+      }
+    });
+    return node;
+  }
   node.setAttribute("aria-label", tileLabel(slot));
   if (slot.kind === "item") {
     node.classList.add("item");
@@ -295,7 +305,13 @@ function render() {
 }
 function tapSlot(index) {
   const slot = state.board[index];
-  if (!slot) return;
+  if (!slot) {
+    if (selected !== null && state.board[selected]) {
+      moveOrMerge(selected, index);
+      render();
+    }
+    return;
+  }
   if (slot.kind === "generator") return produce(slot.id, index);
   if (slot.kind === "locked") return setStatus(`이 칸은 레벨 ${slot.level}에서 열립니다.`);
   if (slot.kind === "station") return useStation(index);
