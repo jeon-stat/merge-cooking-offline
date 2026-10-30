@@ -3,6 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
+const STATE_VERSION = 6;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -32,6 +33,13 @@ const stations = {
   shaker: { name: "셰이커", art: "🍸" },
   pot: { name: "조리 냄비", art: "🍲" }
 };
+const contentUnlockLabels = {
+  "tourist-bag": "관광객 가방",
+  "french-recipe-book": "프랑스 레시피 북",
+  "collection-catalog": "컬렉션 카탈로그",
+  "japanese-attractions": "일본 명소",
+  "japanese-recipe-book": "일본 레시피 북"
+};
 let stageIndexForOrders = 0;
 let dragStart = null;
 let suppressNextClick = false;
@@ -59,8 +67,6 @@ function emptyBoard() {
   board[4] = { kind: "generator", id: "drink-generator", level: 6 };
   board[44] = { kind: "station", id: "juicer", ingredients: [] };
   board[46] = { kind: "station", id: "chef-counter", ingredients: [] };
-  board[31] = { kind: "locked", level: 3 };
-  board[38] = { kind: "locked", level: 4 };
   [[8, "cherry"], [9, "cherry"], [16, "water"], [17, "water"], [23, "strawberry"], [29, "sesame"]]
     .forEach(([index, item]) => { board[index] = { kind: "item", id: item }; });
   return board;
@@ -73,12 +79,20 @@ function freshOrder() {
   return { id: id(), item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
 }
 function initialState() {
-  return { version: 5, level: 35, coins: 101, gems: 20, stars: 0, stageIndex: 0, board: emptyBoard(), storage: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
+  return { version: STATE_VERSION, level: 35, coins: 101, gems: 20, stars: 0, stageIndex: 0, board: emptyBoard(), storage: [], pendingUnlocks: [], unlockedContent: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
+}
+function migrateState(saved) {
+  if (!saved || !Array.isArray(saved.board) || saved.board.length !== COLS * ROWS) return null;
+  const migrated = { ...saved, version: STATE_VERSION, storage: Array.isArray(saved.storage) ? saved.storage : [], pendingUnlocks: Array.isArray(saved.pendingUnlocks) ? saved.pendingUnlocks : [], unlockedContent: Array.isArray(saved.unlockedContent) ? saved.unlockedContent : [], orders: Array.isArray(saved.orders) ? saved.orders : [] };
+  if (migrated.level >= 3) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 3 ? null : slot);
+  if (migrated.level >= 4) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 4 ? null : slot);
+  return migrated;
 }
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
-    if (saved?.version === 5 && saved.board?.length === COLS * ROWS) return saved;
+    const migrated = migrateState(saved);
+    if (migrated) return migrated;
   } catch { /* start with a clean offline state */ }
   return initialState();
 }
@@ -89,19 +103,42 @@ function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
 function unlockStageContents(stageIndex) {
   const stage = DATA.stages?.[stageIndex];
   if (!stage?.unlocks) return;
-  const present = new Set(state.board.filter(Boolean).map(slot => slot.id));
-  for (const unlock of stage.unlocks) {
+  const present = new Set([...state.board, ...state.storage].filter(Boolean).map(slot => slot.id));
+  const queue = [...(state.pendingUnlocks || []), ...stage.unlocks];
+  state.pendingUnlocks = [];
+  for (const unlock of [...new Set(queue)]) {
+    if (!state.unlockedContent.includes(unlock)) state.unlockedContent.push(unlock);
     if (present.has(unlock)) continue;
     const isGenerator = Boolean(DATA.generators?.[unlock]);
     const isStation = Boolean(stations[unlock]);
     if (!isGenerator && !isStation) continue;
+    const slot = makeUnlockSlot(unlock);
     const target = emptyIndex();
-    if (target < 0) break;
-    state.board[target] = isGenerator
-      ? { kind: "generator", id: unlock, level: generatorSlots[unlock].level }
-      : { kind: "station", id: unlock, ingredients: [] };
+    if (target >= 0) state.board[target] = slot;
+    else if (state.storage.length < 8) state.storage.push(slot);
+    else state.pendingUnlocks.push(unlock);
     present.add(unlock);
   }
+}
+function makeUnlockSlot(unlock) {
+  if (DATA.generators?.[unlock]) return { kind: "generator", id: unlock, level: generatorSlots[unlock].level };
+  if (stations[unlock]) return { kind: "station", id: unlock, ingredients: [] };
+  return null;
+}
+function drainPendingUnlocks() {
+  if (!state.pendingUnlocks?.length) return;
+  const remaining = [];
+  for (const unlock of state.pendingUnlocks) {
+    const present = [...state.board, ...state.storage].some(slot => slot?.id === unlock);
+    if (present) continue;
+    const slot = makeUnlockSlot(unlock);
+    if (!slot) continue;
+    const target = emptyIndex();
+    if (target >= 0) state.board[target] = slot;
+    else if (state.storage.length < 8) state.storage.push(slot);
+    else remaining.push(unlock);
+  }
+  state.pendingUnlocks = remaining;
 }
 function dataItem(item) { return DATA.items[item] || [item, "❔"]; }
 function name(item) { return dataItem(item)[0]; }
@@ -171,7 +208,8 @@ function renderJournal() {
   const stages = DATA.stages || [];
   const current = stages[state.stageIndex] || DATA.firstStage;
   document.querySelector("#journalCount")?.replaceChildren(document.createTextNode(`${Math.min(state.stageIndex + 1, stages.length)}/${stages.length}`));
-  document.querySelector("#journalSummary")?.replaceChildren(document.createTextNode(`${current.name} · ${current.country || ""} · ${current.focus || ""}`));
+  const pending = state.pendingUnlocks?.length ? ` · 대기 해금 ${state.pendingUnlocks.length}` : "";
+  document.querySelector("#journalSummary")?.replaceChildren(document.createTextNode(`${current.name} · ${current.country || ""} · ${current.focus || ""}${pending}`));
   if (!journalStagesNode) return;
   journalStagesNode.replaceChildren(...stages.map((stage, index) => {
     const node = document.createElement("div");
@@ -182,6 +220,7 @@ function renderJournal() {
   }));
 }
 function render() {
+  drainPendingUnlocks();
   document.querySelector("#level").textContent = state.level;
   document.querySelector("#coins").textContent = state.coins;
   document.querySelector("#gems").textContent = state.gems;
