@@ -40,6 +40,8 @@ window.MERGE_COOKING_DATA = Object.freeze({
     frenchRecipes: "https://merge-cooking-theme-restaurant.fandom.com/wiki/French_Recipes",
     japaneseRecipes: "https://merge-cooking-theme-restaurant.fandom.com/wiki/Japanese_Recipes",
     japaneseAttraction: "https://w.atwiki.jp/merge_cooking/pages/147.html",
+    italianVehicle: "https://merge-cooking-theme-restaurant.fandom.com/wiki/Italian_Themed_Vehicle",
+    stageList: "https://w.atwiki.jp/merge_cooking/pages/186.html",
     video: "https://www.youtube.com/watch?v=YCke1icPTKU"
   }),
   firstStage: Object.freeze({
@@ -60,7 +62,23 @@ window.MERGE_COOKING_DATA = Object.freeze({
     Object.freeze({ id: "dreaming-macaron", name: "Dreaming Macaron", country: "프랑스", unlocks: Object.freeze(["french-recipe-book"]), focus: "French desserts", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
     Object.freeze({ id: "little-marseille", name: "Little Marseille", country: "프랑스", unlocks: Object.freeze([]), focus: "French seafood", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
     Object.freeze({ id: "izakaya", name: "Izakaya", country: "일본", unlocks: Object.freeze(["japanese-attractions", "japanese-recipe-book"]), focus: "Japanese dishes", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
-    Object.freeze({ id: "sakura-wagashi", name: "Sakura & Wagashi", country: "일본", unlocks: Object.freeze([]), focus: "Japanese sweets", source: "https://w.atwiki.jp/mergecooking/pages/37.html" })
+    Object.freeze({ id: "sakura-wagashi", name: "Sakura & Wagashi", country: "일본", unlocks: Object.freeze([]), focus: "Japanese sweets", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "noodle-bar", name: "Noodle Bar", country: "일본", unlocks: Object.freeze([]), focus: "noodles and Japanese dishes", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "ryotei", name: "Ryotei", country: "일본", unlocks: Object.freeze([]), focus: "Japanese fine dining", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "dragon-castle", name: "Dragon Castle", country: "중국", unlocks: Object.freeze([]), focus: "Chinese dishes", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "riverside-diner", name: "Riverside Diner", country: "중국", unlocks: Object.freeze([]), focus: "Chinese comfort food", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "everything-spicy", name: "Everything Spicy", country: "중국", unlocks: Object.freeze([]), focus: "spicy Chinese dishes", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "cantonese-snack-bar", name: "Cantonese Snack Bar", country: "중국", unlocks: Object.freeze([]), focus: "Cantonese snacks", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "delicious-spanish-cuisine", name: "Food Delicioso", country: "스페인", unlocks: Object.freeze([]), focus: "Spanish cuisine", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "el-puerto", name: "El Puerto", country: "스페인", unlocks: Object.freeze([]), focus: "Spanish seafood", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "tapas-bar", name: "Tapas Bar", country: "스페인", unlocks: Object.freeze([]), focus: "tapas", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "prickly-palate", name: "Prickly Palate", country: "스페인", unlocks: Object.freeze([]), focus: "Spanish specialties", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "deathly-tasty-tacos", name: "Deathly Tasty Tacos", country: "멕시코", unlocks: Object.freeze([]), focus: "tacos and Mexican dishes", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "mayan-delights", name: "Mayan Delights", country: "멕시코", unlocks: Object.freeze([]), focus: "Mayan cuisine", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "venice-vibes", name: "Venice Vibes", country: "이탈리아", unlocks: Object.freeze(["italian-themed-vehicle", "italian-recipe-book"]), focus: "Italian cuisine and handcrafts", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "tuscan-terrace", name: "Tuscan Terrace", country: "이탈리아", unlocks: Object.freeze([]), focus: "Tuscan cuisine", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "caesars-kitchen", name: "Caesar's Kitchen", country: "이탈리아", unlocks: Object.freeze([]), focus: "Roman cuisine", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" }),
+    Object.freeze({ id: "neapolitan-feast", name: "Neapolitan Feast", country: "이탈리아", unlocks: Object.freeze([]), focus: "Neapolitan cuisine", source: "https://w.atwiki.jp/merge_cooking/pages/186.html" })
   ]),
   chains: Object.freeze({
     fruit: Object.freeze(["cherry", "strawberry", "apple", "banana", "lemon", "coconut", "orange", "pomegranate", "pear", "mango", "pineapple", "watermelon"]),
@@ -75,6 +93,7 @@ window.MERGE_COOKING_DATA = Object.freeze({
     grain: Object.freeze(["red-bean", "soybean", "common-bean", "wheat-flour", "corn-flour", "breadcrumb", "rice", "rice-flour", "buckwheat-flour", "chickpea", "ube", "yam"]),
     dough: Object.freeze(["small-dough", "burger-bun", "hot-dog-bun", "pie-crust", "donut-dough", "toast-dough"]),
     baggage: Object.freeze(["bald-eagle-stamp", "hollywood-postcard", "cowboy-hat", "american-football", "i-love-mc-mug", "fridge-magnet", "las-vegas-badge", "dream-catcher", "hawaiian-tikis", "desk-decoration"]),
+    italianHandcraft: Object.freeze(["italian-horn-pendant", "espresso-cup", "venetian-glass", "pasta-mold-set", "roman-soldier-helmet", "venetian-mask", "sicilian-pine-cone", "pinocchio-toy", "mosaic-painting", "michelangelo-david"]),
     bamboo: Object.freeze(["bamboo-shoot", "fresh-bamboo", "bamboo-stalks", "bamboo-sword", "matcha-tea-set", "kendama", "kokeshi-doll", "bamboo-hand-fan", "oil-paper-umbrella", "lucky-paddle"]),
     fox: Object.freeze(["fox-mask", "fox-wishing-plates", "fox-amulet", "fox-hand-towel", "fox-coin-purse", "fox-wind-bell", "fox-statue"]),
     musselProducts: Object.freeze(["green-laver", "nori", "kelp", "wakame", "sea-grapes"]),
@@ -98,7 +117,8 @@ window.MERGE_COOKING_DATA = Object.freeze({
     baguette: ["바게트", "🥖"], "smoked-salmon": ["훈제 연어", "🐟"], "cured-duck": ["숙성 오리", "🦆"], "duck-confit": ["오리 콩피", "🍗"], "natto": ["낫토", "🫘"], "japanese-rolled-omelette": ["일본식 계란말이", "🍳"], "chicken-breast-yakitori": ["닭가슴살 야키토리", "🍢"], "chicken-wing-yakitori": ["닭날개 야키토리", "🍢"], "mackerel-sashimi": ["고등어 사시미", "🐟"], "squid-sashimi": ["오징어 사시미", "🦑"], "shrimp-sashimi": ["새우 사시미", "🦐"], "crab-sashimi": ["게 사시미", "🦀"], "scallop-sashimi": ["가리비 사시미", "🦪"], "salmon-sashimi": ["연어 사시미", "🐟"], "tuna-sashimi": ["참치 사시미", "🐟"], "abalone-sashimi": ["전복 사시미", "🐚"], "bass-sashimi": ["농어 사시미", "🐟"],
     "bamboo-shoot": ["죽순", "🎋"], "fresh-bamboo": ["신선한 대나무", "🎋"], "bamboo-stalks": ["대나무 장대", "🎋"], "bamboo-sword": ["죽도", "🗡️"], "matcha-tea-set": ["다도 세트", "🍵"], kendama: ["켄다마", "🪀"], "kokeshi-doll": ["코케시 인형", "🪆"], "bamboo-hand-fan": ["대나무 부채", "🪭"], "oil-paper-umbrella": ["종이 우산", "☂️"], "lucky-paddle": ["복 패들", "🏓"], "fox-mask": ["여우 가면", "🦊"], "fox-wishing-plates": ["여우 소원 접시", "🍽️"], "fox-amulet": ["여우 부적", "🧿"], "fox-hand-towel": ["여우 손수건", "🧣"], "fox-coin-purse": ["여우 동전지갑", "👛"], "fox-wind-bell": ["여우 풍경", "🔔"], "fox-statue": ["여우 장식상", "🦊"],
     "green-laver": ["파래", "🌿"], nori: ["김", "🍙"], kelp: ["다시마", "🌿"], wakame: ["미역", "🌿"], "sea-grapes": ["바다 포도", "🫧"], "bucket-of-rice": ["밥 양동이", "🍚"], "bowl-of-rice": ["밥공기", "🍚"], "sushi-rolling-mat": ["초밥용 발", "🍣"], "cucumber-sushi-roll": ["오이 초밥말이", "🍣"], "tuna-sushi-roll": ["참치 초밥말이", "🍣"], "california-sushi-roll": ["캘리포니아 롤", "🍣"], "duck-breast-sushi": ["오리 가슴살 초밥", "🍣"], "cup-of-matcha": ["말차 한 잔", "🍵"], "matcha-powder": ["말차 가루", "🍵"], "fox-pancake": ["여우 팬케이크", "🥞"],
-    "bald-eagle-stamp": ["대머리독수리 우표", "🦅"], "hollywood-postcard": ["할리우드 엽서", "📮"], "cowboy-hat": ["카우보이 모자", "🤠"], "american-football": ["미식축구공", "🏈"], "i-love-mc-mug": ["I Love MC 머그", "☕"], "fridge-magnet": ["냉장고 자석", "🧲"], "las-vegas-badge": ["라스베이거스 배지", "🎰"], "dream-catcher": ["드림캐처", "🪶"], "hawaiian-tikis": ["하와이 티키", "🗿"], "desk-decoration": ["책상 장식", "🪴"]
+    "bald-eagle-stamp": ["대머리독수리 우표", "🦅"], "hollywood-postcard": ["할리우드 엽서", "📮"], "cowboy-hat": ["카우보이 모자", "🤠"], "american-football": ["미식축구공", "🏈"], "i-love-mc-mug": ["I Love MC 머그", "☕"], "fridge-magnet": ["냉장고 자석", "🧲"], "las-vegas-badge": ["라스베이거스 배지", "🎰"], "dream-catcher": ["드림캐처", "🪶"], "hawaiian-tikis": ["하와이 티키", "🗿"], "desk-decoration": ["책상 장식", "🪴"],
+    "italian-horn-pendant": ["이탈리아 뿔 펜던트", "📿"], "espresso-cup": ["에스프레소 잔", "☕"], "venetian-glass": ["베네치아 유리", "🍷"], "pasta-mold-set": ["파스타 몰드 세트", "🧰"], "roman-soldier-helmet": ["로마 병사 투구", "🪖"], "venetian-mask": ["베네치아 가면", "🎭"], "sicilian-pine-cone": ["시칠리아 솔방울", "🌲"], "pinocchio-toy": ["피노키오 인형", "🪆"], "mosaic-painting": ["모자이크 그림", "🖼️"], "michelangelo-david": ["미켈란젤로의 다비드", "🗿"]
   })),
   generators: Object.freeze({
     "drink-generator": Object.freeze({
@@ -115,6 +135,7 @@ window.MERGE_COOKING_DATA = Object.freeze({
     "big-dough": Object.freeze({ title: "큰 반죽", artwork: "🍞", source: "https://w.atwiki.jp/merge_cooking/pages/43.html", outputs: Object.freeze({ 1: ["small-dough"], 2: ["small-dough", "burger-bun"], 3: ["small-dough", "burger-bun", "hot-dog-bun"], 4: ["small-dough", "burger-bun", "hot-dog-bun", "pie-crust"], 5: ["small-dough", "burger-bun", "hot-dog-bun", "pie-crust", "donut-dough"], 6: ["small-dough", "burger-bun", "hot-dog-bun", "pie-crust", "donut-dough", "toast-dough"] }) }),
     "alcohol-generator": Object.freeze({ title: "알코올 생성기", artwork: "🍷", source: "https://w.atwiki.jp/merge_cooking/pages/55.html", outputs: Object.freeze({ 4: ["grape", "wine", "rum"], 5: ["grape", "wine", "brandy", "gin"], 6: ["grape", "wine", "tangerine-wine", "rum", "brandy", "gin", "champagne", "vodka", "absinthe", "whiskey"] }) }),
     "tourist-bag": Object.freeze({ title: "관광객 가방", artwork: "🧳", source: "https://merge-cooking-theme-restaurant.fandom.com/wiki/Tourist_Baggage", outputs: Object.freeze({ 4: ["bald-eagle-stamp"], 5: ["bald-eagle-stamp", "hollywood-postcard"], 6: ["bald-eagle-stamp", "hollywood-postcard"], 7: ["bald-eagle-stamp", "hollywood-postcard", "cowboy-hat"] }) }),
+    "italian-themed-vehicle": Object.freeze({ title: "이탈리아 테마 차량", artwork: "🚗", source: "https://merge-cooking-theme-restaurant.fandom.com/wiki/Italian_Themed_Vehicle", outputs: Object.freeze({ 4: ["italian-horn-pendant"], 5: ["italian-horn-pendant", "espresso-cup"], 6: ["italian-horn-pendant", "espresso-cup", "venetian-glass"], 7: ["italian-horn-pendant", "espresso-cup", "venetian-glass", "pasta-mold-set"] }) }),
     "japanese-attractions": Object.freeze({ title: "일본의 매력", artwork: "⛩️", source: "https://w.atwiki.jp/merge_cooking/pages/147.html", outputs: Object.freeze({ 4: ["bamboo-shoot", "fox-mask"], 5: ["bamboo-shoot", "fresh-bamboo", "fox-mask"], 6: ["bamboo-shoot", "fresh-bamboo", "bamboo-stalks", "fox-mask"] }) }),
     mussel: Object.freeze({ title: "홍합 파생기", artwork: "🦪", source: "https://merge-cooking-theme-restaurant.fandom.com/wiki/Ship", outputs: Object.freeze({ 1: ["green-laver"] }) }),
     "bamboo-stalks": Object.freeze({ title: "대나무 장대", artwork: "🎋", source: "https://merge-cooking-theme-restaurant.fandom.com/wiki/Japanese_Attraction", outputs: Object.freeze({ 1: ["sushi-rolling-mat"] }) }),
@@ -149,6 +170,22 @@ window.MERGE_COOKING_DATA = Object.freeze({
     "dreaming-macaron": Object.freeze(["apple-pie", "banana-pie", "mango-juice", "pineapple-juice", "baguette", "duck-confit"]),
     "little-marseille": Object.freeze(["grilled-beef-ribs", "fried-broccoli", "pineapple-juice", "potato-salad", "smoked-salmon", "mackerel-sashimi", "shrimp-sashimi"]),
     "izakaya": Object.freeze(["apple-juice", "fried-ham", "grilled-chicken-breast", "wine", "natto", "japanese-rolled-omelette", "chicken-breast-yakitori", "mackerel-sashimi", "squid-sashimi", "shrimp-sashimi", "bamboo-hand-fan", "fox-statue", "cucumber-sushi-roll", "tuna-sushi-roll", "fox-pancake"]),
-    "sakura-wagashi": Object.freeze(["strawberry-juice", "banana-pie", "apple-pie", "toast", "salmon-sashimi", "tuna-sashimi", "bamboo-hand-fan", "fox-wind-bell", "california-sushi-roll", "duck-breast-sushi", "cup-of-matcha"])
+    "sakura-wagashi": Object.freeze(["strawberry-juice", "banana-pie", "apple-pie", "toast", "salmon-sashimi", "tuna-sashimi", "bamboo-hand-fan", "fox-wind-bell", "california-sushi-roll", "duck-breast-sushi", "cup-of-matcha"]),
+    "noodle-bar": Object.freeze(["tuna-sushi-roll", "cucumber-sushi-roll", "mackerel-sashimi", "shrimp-sashimi", "natto"]),
+    "ryotei": Object.freeze(["salmon-sashimi", "california-sushi-roll", "duck-breast-sushi", "cup-of-matcha", "fox-wind-bell"]),
+    "dragon-castle": Object.freeze(["fried-chicken", "grilled-chicken-breast", "potato-salad", "apple-juice"]),
+    "riverside-diner": Object.freeze(["grilled-squid", "grilled-shrimp", "pork-burger", "banana-split"]),
+    "everything-spicy": Object.freeze(["grilled-beef-ribs", "fried-pork-chop", "gin-rickey", "pina-colada"]),
+    "cantonese-snack-bar": Object.freeze(["fried-bacon", "fried-egg", "toast", "mango-pie"]),
+    "delicious-spanish-cuisine": Object.freeze(["pot-au-feu", "grilled-tuna", "mimosa", "apple-pie"]),
+    "el-puerto": Object.freeze(["grilled-mussel", "grilled-crab", "shrimp-cocktail", "pineapple-juice"]),
+    "tapas-bar": Object.freeze(["fried-ham", "grilled-bell-pepper", "coleslaw", "wine"]),
+    "prickly-palate": Object.freeze(["banana-split", "mango-pie", "carimocho", "grilled-chicken-wing"]),
+    "deathly-tasty-tacos": Object.freeze(["pork-burger", "grilled-corn", "potato-strips", "bloody-mary"]),
+    "mayan-delights": Object.freeze(["grilled-beef-steak", "hawaiian-poke-bowl", "pina-colada", "banana-pie"]),
+    "venice-vibes": Object.freeze(["italian-horn-pendant", "espresso-cup", "venetian-glass", "pasta-mold-set"]),
+    "tuscan-terrace": Object.freeze(["roman-soldier-helmet", "venetian-mask", "sicilian-pine-cone", "smoked-salmon"]),
+    "caesars-kitchen": Object.freeze(["pinocchio-toy", "mosaic-painting", "duck-confit", "baguette"]),
+    "neapolitan-feast": Object.freeze(["michelangelo-david", "baked-burger-bun", "grilled-beef-ribs", "wine"])
   })
 });
