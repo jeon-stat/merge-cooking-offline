@@ -175,7 +175,7 @@ window.MERGE_COOKING_DATA = Object.freeze({
     "ryotei": Object.freeze(["salmon-sashimi", "california-sushi-roll", "duck-breast-sushi", "cup-of-matcha", "fox-wind-bell"]),
     "dragon-castle": Object.freeze(["fried-chicken", "grilled-chicken-breast", "potato-salad", "apple-juice"]),
     "riverside-diner": Object.freeze(["grilled-squid", "grilled-shrimp", "pork-burger", "banana-split"]),
-    "everything-spicy": Object.freeze(["grilled-beef-ribs", "fried-pork-chop", "gin-rickey", "pina-colada"]),
+    "everything-spicy": Object.freeze(["grilled-beef-ribs", "fried-ham", "gin-rickey", "pina-colada"]),
     "cantonese-snack-bar": Object.freeze(["fried-bacon", "fried-egg", "toast", "mango-pie"]),
     "delicious-spanish-cuisine": Object.freeze(["pot-au-feu", "grilled-tuna", "mimosa", "apple-pie"]),
     "el-puerto": Object.freeze(["grilled-mussel", "grilled-crab", "shrimp-cocktail", "pineapple-juice"]),
