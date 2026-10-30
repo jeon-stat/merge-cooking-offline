@@ -7,6 +7,7 @@ const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
 const statusNode = document.querySelector("#status");
+const journalStagesNode = document.querySelector("#journalStages");
 let selected = null;
 
 const nextItem = Object.fromEntries(Object.values(DATA.chains).flatMap(chain =>
@@ -166,6 +167,20 @@ function renderOrders() {
     return node;
   }));
 }
+function renderJournal() {
+  const stages = DATA.stages || [];
+  const current = stages[state.stageIndex] || DATA.firstStage;
+  document.querySelector("#journalCount")?.replaceChildren(document.createTextNode(`${Math.min(state.stageIndex + 1, stages.length)}/${stages.length}`));
+  document.querySelector("#journalSummary")?.replaceChildren(document.createTextNode(`${current.name} · ${current.country || ""} · ${current.focus || ""}`));
+  if (!journalStagesNode) return;
+  journalStagesNode.replaceChildren(...stages.map((stage, index) => {
+    const node = document.createElement("div");
+    node.className = `journal-stage${index === state.stageIndex ? " current" : ""}${index < state.stageIndex ? " complete" : ""}`;
+    const stateLabel = index < state.stageIndex ? "완료" : index === state.stageIndex ? "진행 중" : "잠김";
+    node.innerHTML = `<strong>${index + 1}. ${stage.name}</strong><span>${stage.country || ""} · ${stage.focus || ""}</span><b>${stateLabel}</b>`;
+    return node;
+  }));
+}
 function render() {
   document.querySelector("#level").textContent = state.level;
   document.querySelector("#coins").textContent = state.coins;
@@ -185,6 +200,7 @@ function render() {
   boardNode.querySelector(`[data-index="${selected}"]`)?.classList.add("selected");
   storageNode.replaceChildren(...state.storage.map((slot, index) => renderSlot(slot, index, true)));
   renderOrders();
+  renderJournal();
   save();
 }
 function tapSlot(index) {
@@ -323,6 +339,12 @@ document.querySelector("#storageButton").addEventListener("click", () => {
   if (selected !== null) storeSelected();
   else document.querySelector("#storagePanel").hidden = false;
 });
+document.querySelector("#journalButton")?.addEventListener("click", () => {
+  const panel = document.querySelector("#journalPanel");
+  if (panel) panel.hidden = false;
+  renderJournal();
+});
+document.querySelector("#closeJournal")?.addEventListener("click", () => { document.querySelector("#journalPanel").hidden = true; });
 document.querySelector("#renovateButton")?.addEventListener("click", renovateStage);
 document.querySelector("#closeStorage").addEventListener("click", () => { document.querySelector("#storagePanel").hidden = true; });
 document.querySelector("#resetButton").addEventListener("click", () => {
