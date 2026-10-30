@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 6;
+const STATE_VERSION = 7;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -22,7 +22,10 @@ const generatorSlots = {
   "fruit-nut-generator": { name: "과일 & 견과 생성기", art: "🍓", level: 6 },
   "protein-generator": { name: "프로틴 생성기", art: "🍗", level: 6 },
   "vegetable-generator": { name: "채소 생성기", art: "🥬", level: 6 },
-  "grain-generator": { name: "곡물 생성기", art: "🌾", level: 6 },
+  // The public grain table starts yielding wheat flour at generator level 7.
+  // The stage unlock grants that level so the newly unlocked restaurant has a
+  // reachable burger/tart path without requiring an undocumented second copy.
+  "grain-generator": { name: "곡물 생성기", art: "🌾", level: 7 },
   "big-dough": { name: "큰 반죽", art: "🍞", level: 1 },
   "alcohol-generator": { name: "알코올 생성기", art: "🍷", level: 6 },
   ship: { name: "배", art: "🚢", level: 6 }
@@ -79,31 +82,44 @@ function emptyBoard() {
   return board;
 }
 function id() { return crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`; }
-function freshOrder() {
-  const stage = DATA.stages?.[stageIndexForOrders] || DATA.firstStage;
+function freshOrder(stageIndex = stageIndexForOrders) {
+  const stage = DATA.stages?.[stageIndex] || DATA.firstStage;
   const pool = DATA.stageOrders?.[stage.id] || DATA.stageOrders?.[DATA.firstStage.id] || ["cola", "cherry-juice"];
   const item = pool[Math.floor(Math.random() * pool.length)];
   return { id: id(), stageId: stage.id, item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
 }
 function initialState() {
-  return { version: STATE_VERSION, level: 35, coins: 101, gems: 20, stars: 0, completedOrders: 0, stageIndex: 0, board: emptyBoard(), storage: [], pendingUnlocks: [], unlockedContent: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
+  return { version: STATE_VERSION, level: 35, coins: 101, gems: 20, stars: 0, completedOrders: 0, stageIndex: 0, board: emptyBoard(), storage: [], pendingUnlocks: [], unlockedContent: [], orders: [freshOrder(0), freshOrder(0), freshOrder(0)] };
 }
 function migrateState(saved) {
   if (!saved || !Array.isArray(saved.board) || saved.board.length !== COLS * ROWS) return null;
-  const migrated = { ...saved, version: STATE_VERSION, completedOrders: Number.isFinite(saved.completedOrders) ? saved.completedOrders : 0, storage: Array.isArray(saved.storage) ? saved.storage : [], pendingUnlocks: Array.isArray(saved.pendingUnlocks) ? saved.pendingUnlocks : [], unlockedContent: Array.isArray(saved.unlockedContent) ? saved.unlockedContent : [], orders: Array.isArray(saved.orders) ? saved.orders : [] };
-  if (!migrated.orders.length) {
-    const previousStage = stageIndexForOrders;
-    stageIndexForOrders = Number.isInteger(migrated.stageIndex) ? migrated.stageIndex : 0;
-    migrated.orders = [freshOrder(), freshOrder(), freshOrder()];
-    stageIndexForOrders = previousStage;
-  } else {
-    const currentStageId = DATA.stages?.[migrated.stageIndex]?.id || DATA.firstStage.id;
-    if (migrated.orders.some(order => order.stageId && order.stageId !== currentStageId)) {
-      const previousStage = stageIndexForOrders;
-      stageIndexForOrders = Number.isInteger(migrated.stageIndex) ? migrated.stageIndex : 0;
-      migrated.orders = [freshOrder(), freshOrder(), freshOrder()];
-      stageIndexForOrders = previousStage;
-    }
+  const maxStage = Math.max(0, (DATA.stages?.length || 1) - 1);
+  const stageIndex = Number.isInteger(saved.stageIndex) ? Math.min(maxStage, Math.max(0, saved.stageIndex)) : 0;
+  const migrated = {
+    ...saved,
+    version: STATE_VERSION,
+    level: Number.isFinite(saved.level) ? saved.level : 35,
+    coins: Number.isFinite(saved.coins) ? saved.coins : 101,
+    gems: Number.isFinite(saved.gems) ? saved.gems : 20,
+    stars: Number.isFinite(saved.stars) ? Math.max(0, Math.min(19, saved.stars)) : 0,
+    stageIndex,
+    completedOrders: Number.isFinite(saved.completedOrders) ? Math.max(0, saved.completedOrders) : 0,
+    storage: Array.isArray(saved.storage) ? saved.storage : [],
+    pendingUnlocks: Array.isArray(saved.pendingUnlocks) ? saved.pendingUnlocks : [],
+    unlockedContent: Array.isArray(saved.unlockedContent) ? saved.unlockedContent : [],
+    orders: Array.isArray(saved.orders) ? saved.orders : []
+  };
+  const currentStage = DATA.stages?.[stageIndex] || DATA.firstStage;
+  const currentStageId = currentStage.id;
+  const currentPool = new Set(DATA.stageOrders?.[currentStageId] || []);
+  const ordersNeedRefresh = migrated.orders.length !== 3 || migrated.orders.some(order => !order || !order.id || order.stageId !== currentStageId || !currentPool.has(order.item));
+  if (ordersNeedRefresh) migrated.orders = [freshOrder(stageIndex), freshOrder(stageIndex), freshOrder(stageIndex)];
+  if (stageIndex >= 2) {
+    const upgradeGrain = slot => slot?.kind === "generator" && slot.id === "grain-generator" && (slot.level || 1) < 7
+      ? { ...slot, level: 7 }
+      : slot;
+    migrated.board = migrated.board.map(upgradeGrain);
+    migrated.storage = migrated.storage.map(upgradeGrain);
   }
   if (migrated.level >= 3) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 3 ? null : slot);
   if (migrated.level >= 4) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 4 ? null : slot);
@@ -492,6 +508,7 @@ document.querySelector("#renovateButton")?.addEventListener("click", renovateSta
 document.querySelector("#closeStorage").addEventListener("click", () => { document.querySelector("#storagePanel").hidden = true; });
 document.querySelector("#resetButton").addEventListener("click", () => {
   if (confirm("이 기기의 오프라인 진행도를 초기화할까요?")) {
+    stageIndexForOrders = 0;
     state = initialState();
     selected = null;
     setStatus("첫 번째 레스토랑을 다시 시작합니다.");
