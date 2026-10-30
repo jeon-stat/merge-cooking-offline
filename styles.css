@@ -33,7 +33,7 @@ body { background:#6fc5d7; }
 .storage-panel { opacity:0; pointer-events:none; }.bottom-dock { position:absolute; inset:auto 0 0; height:10%; padding:0; }.bottom-dock .quest-button,.bottom-dock .home-button { opacity:0; width:50%; height:100%; border:0; background:transparent; box-shadow:none; }
 
 /* Live gameplay layer: the reference image is not the board itself. */
-.game-shell { width:min(100%,430px); min-height:100svh; height:auto; aspect-ratio:auto; padding:max(9px,env(safe-area-inset-top)) 7px calc(53px + env(safe-area-inset-bottom)); background:linear-gradient(#87cdd7 0,#a9d1b9 19%,#f4eed5 38%,#e4c58f 100%); }
+.game-shell { width:min(100%,430px); min-height:100svh; height:auto; aspect-ratio:auto; padding:max(9px,env(safe-area-inset-top)) 7px calc(53px + env(safe-area-inset-bottom)); background:url("reference-game.png") center / 100% 100% no-repeat,linear-gradient(#87cdd7 0,#a9d1b9 19%,#f4eed5 38%,#e4c58f 100%); }
 .restaurant-scene { display:block; position:absolute; inset:0 0 auto; height:196px; }
 .topbar { position:relative; inset:auto; height:auto; opacity:1; }
 .orders-panel { position:relative; inset:auto; height:auto; margin-top:34px; padding:6px 4px 0; background:linear-gradient(180deg,rgba(255,251,232,.92),rgba(255,248,222,.88)); }
