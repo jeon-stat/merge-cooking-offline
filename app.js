@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 12;
+const STATE_VERSION = 13;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -132,6 +132,9 @@ function migrateState(saved) {
   const currentPool = new Set(DATA.stageOrders?.[currentStageId] || []);
   const ordersNeedRefresh = migrated.orders.length !== 3 || migrated.orders.some(order => !order || !order.id || order.stageId !== currentStageId || !currentPool.has(order.item));
   if (ordersNeedRefresh) migrated.orders = [freshOrder(stageIndex), freshOrder(stageIndex), freshOrder(stageIndex)];
+  const normalizeStation = slot => slot?.kind === "station" ? { ...slot, level: slot.level || 1, ingredients: Array.isArray(slot.ingredients) ? slot.ingredients : [] } : slot;
+  migrated.board = migrated.board.map(normalizeStation);
+  migrated.storage = migrated.storage.map(normalizeStation);
   if (stageIndex >= 2) {
     const upgradeGrain = slot => slot?.kind === "generator" && slot.id === "grain-generator" && (slot.level || 1) < 7
       ? { ...slot, level: 7 }
@@ -233,7 +236,7 @@ function tileLabel(slot) {
   if (slot.kind === "item") return name(slot.id);
   if (slot.kind === "generator") return `${generatorSlots[slot.id].name} Lv.${slot.level || generatorSlots[slot.id].level}`;
   if (slot.kind === "locked") return `레벨 ${slot.level}에서 잠금 해제`;
-  return stations[slot.id].name;
+  return `${stations[slot.id].name} Lv.${slot.level || 1}`;
 }
 function renderSlot(slot, index, inStorage = false) {
   const node = document.querySelector("#itemTemplate").content.firstElementChild.cloneNode(true);
@@ -264,10 +267,10 @@ function renderSlot(slot, index, inStorage = false) {
     const station = stations[slot.id];
     const ingredientText = slot.ingredients.length ? slot.ingredients.map(art).join("") : "탭해 사용";
     node.classList.add("station-tile");
-    node.innerHTML = `<span class="station-art">${station.art}</span><span class="item-name">${station.name}</span><span class="station-contents">${ingredientText}</span>`;
+    node.innerHTML = `<span class="station-art">${station.art}</span><span class="item-name">${station.name}</span><span class="item-level">Lv.${slot.level || 1}</span><span class="station-contents">${ingredientText}</span>`;
   }
   node.addEventListener("pointerdown", event => {
-    if (inStorage || !slot || !["item", "generator"].includes(slot.kind)) return;
+    if (inStorage || !slot || !["item", "generator", "station"].includes(slot.kind)) return;
     dragStart = { index, x: event.clientX, y: event.clientY };
   });
   node.addEventListener("click", () => {
@@ -400,6 +403,13 @@ function moveOrMerge(from, to) {
     state.board[from] = null;
     setStatus(`${generatorSlots[source.id].name} Lv.${source.level} + Lv.${target.level} → Lv.${nextLevel}!`);
     navigator.vibrate?.(20);
+  } else if (source.kind === "station" && target.kind === "station" && source.id === target.id && (source.level || 1) === (target.level || 1) && !source.ingredients?.length && !target.ingredients?.length) {
+    state.board[to] = { kind: "station", id: source.id, level: (source.level || 1) + 1, ingredients: [] };
+    state.board[from] = null;
+    setStatus(`${stations[source.id].name} Lv.${source.level || 1} + Lv.${target.level || 1} → Lv.${(source.level || 1) + 1}!`);
+    navigator.vibrate?.(20);
+  } else if (source.kind === "station" || target.kind === "station") {
+    setStatus("조리기구는 같은 종류의 빈 조리기구끼리만 합칠 수 있습니다.");
   } else if (!isItem(source)) {
     setStatus("같은 생성기 두 개를 드래그하면 레벨이 올라갑니다.");
   } else if (isItem(target) && source.id === target.id && nextItem[source.id]) {
