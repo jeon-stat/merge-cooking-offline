@@ -41,12 +41,12 @@ function freshOrder() {
   return { id: id(), item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
 }
 function initialState() {
-  return { version: 2, level: 2, coins: 8, gems: 100, board: emptyBoard(), storage: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
+  return { version: 3, level: 35, coins: 101, gems: 20, board: emptyBoard(), storage: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
 }
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
-    if (saved?.version === 2 && saved.board?.length === COLS * ROWS) return saved;
+    if (saved?.version === 3 && saved.board?.length === COLS * ROWS) return saved;
   } catch { /* start with a clean offline state */ }
   return initialState();
 }
