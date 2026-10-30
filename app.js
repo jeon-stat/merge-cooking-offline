@@ -87,6 +87,12 @@ function initialState() {
 function migrateState(saved) {
   if (!saved || !Array.isArray(saved.board) || saved.board.length !== COLS * ROWS) return null;
   const migrated = { ...saved, version: STATE_VERSION, completedOrders: Number.isFinite(saved.completedOrders) ? saved.completedOrders : 0, storage: Array.isArray(saved.storage) ? saved.storage : [], pendingUnlocks: Array.isArray(saved.pendingUnlocks) ? saved.pendingUnlocks : [], unlockedContent: Array.isArray(saved.unlockedContent) ? saved.unlockedContent : [], orders: Array.isArray(saved.orders) ? saved.orders : [] };
+  if (!migrated.orders.length) {
+    const previousStage = stageIndexForOrders;
+    stageIndexForOrders = Number.isInteger(migrated.stageIndex) ? migrated.stageIndex : 0;
+    migrated.orders = [freshOrder(), freshOrder(), freshOrder()];
+    stageIndexForOrders = previousStage;
+  }
   if (migrated.level >= 3) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 3 ? null : slot);
   if (migrated.level >= 4) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 4 ? null : slot);
   return migrated;
@@ -147,6 +153,21 @@ function dataItem(item) { return DATA.items[item] || [item, "❔"]; }
 function name(item) { return dataItem(item)[0]; }
 function art(item) { return dataItem(item)[1]; }
 function chainRank(item) { return Object.values(DATA.chains).find(chain => chain.includes(item))?.indexOf(item) + 1 || 1; }
+function recipeHint(item) {
+  for (const [stationId, recipes] of Object.entries(DATA.recipes || {})) {
+    const recipe = recipes.find(([output]) => output === item);
+    if (recipe) {
+      const ingredients = recipe[1].map(ingredient => name(ingredient)).join(" + ");
+      return `${stations[stationId]?.name || stationId}: ${ingredients} 필요`;
+    }
+  }
+  for (const chain of Object.values(DATA.chains || {})) {
+    const position = chain.indexOf(item);
+    if (position > 0) return `${name(chain[position - 1])} 2개를 병합하세요`;
+  }
+  const source = Object.values(DATA.generators || []).find(generator => Object.values(generator.outputs || {}).some(output => output.includes(item)));
+  return source ? `${source.title}에서 생성됩니다` : "도감에서 조합법을 확인하세요";
+}
 function setStatus(message) { statusNode.textContent = message; }
 function emptyIndex() { return state.board.findIndex(slot => slot === null); }
 function setSelected(index) { selected = index; }
@@ -202,6 +223,8 @@ function renderOrders() {
     const node = document.createElement("button");
     node.type = "button";
     node.className = `order${ready ? " ready" : ""}`;
+    node.title = ready ? `${name(order.item)} 납품` : `${name(order.item)} · ${recipeHint(order.item)}`;
+    node.setAttribute("aria-label", node.title);
     node.innerHTML = `<span class="order-art">${art(order.item)}</span><span class="order-name">${name(order.item)}</span><span class="order-reward">+${order.reward} 🪙</span><span class="customer">${order.face}</span>`;
     node.addEventListener("click", () => fulfillOrder(order.id));
     return node;
@@ -356,11 +379,12 @@ function useStation(index) {
 function fulfillOrder(orderId) {
   const index = state.orders.findIndex(order => order.id === orderId);
   const order = state.orders[index];
+  if (!order) return setStatus("해당 주문을 찾을 수 없습니다. 주문 목록을 새로 고쳤습니다.");
   const boardIndex = state.board.findIndex(slot => slot?.kind === "item" && slot.id === order.item);
   const storageIndex = state.storage.findIndex(slot => slot.id === order.item);
   if (boardIndex >= 0) state.board[boardIndex] = null;
   else if (storageIndex >= 0) state.storage.splice(storageIndex, 1);
-  else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다.`);
+  else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다. ${recipeHint(order.item)}`);
   state.coins += order.reward;
   state.completedOrders = Math.min(35, (state.completedOrders || 0) + 1);
   state.orders[index] = freshOrder();
