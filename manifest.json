@@ -1,0 +1,9 @@
+{
+  "name": "Chef's Table — Offline Merge",
+  "short_name": "Chef's Table",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fff7e7",
+  "theme_color": "#ef765b",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
