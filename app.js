@@ -3,7 +3,8 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 22;
+const STATE_VERSION = 23;
+const XP_BASE = 100;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -109,7 +110,7 @@ function freshOrder(stageIndex = stageIndexForOrders) {
   return { id: id(), stageId: stage.id, item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
 }
 function initialState() {
-  return { version: STATE_VERSION, level: 35, coins: 101, gems: 20, stars: 0, completedOrders: 0, stageIndex: 0, board: emptyBoard(), storage: [], pendingUnlocks: [], unlockedContent: [], orders: [freshOrder(0), freshOrder(0), freshOrder(0)] };
+  return { version: STATE_VERSION, level: 35, xp: 0, coins: 101, gems: 20, stars: 0, completedOrders: 0, stageIndex: 0, board: emptyBoard(), storage: [], pendingUnlocks: [], unlockedContent: [], orders: [freshOrder(0), freshOrder(0), freshOrder(0)] };
 }
 function migrateState(saved) {
   if (!saved || !Array.isArray(saved.board) || saved.board.length !== COLS * ROWS) return null;
@@ -119,6 +120,7 @@ function migrateState(saved) {
     ...saved,
     version: STATE_VERSION,
     level: Number.isFinite(saved.level) ? saved.level : 35,
+    xp: Number.isFinite(saved.xp) ? Math.max(0, saved.xp) : 0,
     coins: Number.isFinite(saved.coins) ? saved.coins : 101,
     gems: Number.isFinite(saved.gems) ? saved.gems : 20,
     stars: Number.isFinite(saved.stars) ? Math.max(0, Math.min(19, saved.stars)) : 0,
@@ -168,6 +170,18 @@ stageIndexForOrders = state.stageIndex || 0;
 // existing offline run without resetting its board or progress.
 for (let index = 0; index <= state.stageIndex; index += 1) unlockStageContents(index);
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function xpToNextLevel(level = state.level) { return XP_BASE + Math.max(0, level - 35) * 25; }
+function awardXp(amount) {
+  if (!Number.isFinite(amount) || amount <= 0) return 0;
+  state.xp = Math.max(0, (state.xp || 0) + Math.floor(amount));
+  let levels = 0;
+  while (state.xp >= xpToNextLevel()) {
+    state.xp -= xpToNextLevel();
+    state.level += 1;
+    levels += 1;
+  }
+  return levels;
+}
 function unlockStageContents(stageIndex) {
   const stage = DATA.stages?.[stageIndex];
   if (!stage?.unlocks) return;
@@ -357,6 +371,7 @@ function renderCatalog() {
 function render() {
   drainPendingUnlocks();
   document.querySelector("#level").textContent = state.level;
+  document.querySelector(".profile")?.setAttribute("aria-label", `셰프 레벨 ${state.level}, 경험치 ${state.xp || 0}/${xpToNextLevel()}`);
   document.querySelector("#coins").textContent = state.coins;
   document.querySelector("#gems").textContent = state.gems;
   const stage = DATA.stages?.[state.stageIndex] || DATA.firstStage;
@@ -452,7 +467,8 @@ function moveOrMerge(from, to) {
     const result = nextItem[source.id];
     state.board[to] = { kind: "item", id: result };
     state.board[from] = null;
-    setStatus(`${name(source.id)} + ${name(source.id)} → ${name(result)}!`);
+    const levels = awardXp(2 + chainRank(result));
+    setStatus(`${name(source.id)} + ${name(source.id)} → ${name(result)}!${levels ? ` 레벨 ${state.level} 달성!` : ""}`);
     navigator.vibrate?.(15);
   } else {
     setStatus("같은 아이템끼리만 병합할 수 있습니다.");
@@ -491,7 +507,8 @@ function useStation(index) {
   if (completed) {
     state.board[outputIndex] = slotForOutput(completed[0]);
     station.ingredients = [];
-    setStatus(`${name(completed[0])} 완성!`);
+    const levels = awardXp(5 + chainRank(completed[0]));
+    setStatus(`${name(completed[0])} 완성!${levels ? ` 레벨 ${state.level} 달성!` : ""}`);
     navigator.vibrate?.([15, 30, 15]);
   } else {
     setStatus(`${name(ingredient)}을(를) 넣었습니다. 재료를 더 넣으세요.`);
@@ -509,8 +526,9 @@ function fulfillOrder(orderId) {
   else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다. ${recipeHint(order.item)}`);
   state.coins += order.reward;
   state.completedOrders = Math.min(35, (state.completedOrders || 0) + 1);
+  const levels = awardXp(10 + chainRank(order.item) * 2);
   state.orders[index] = freshOrder();
-  setStatus(`주문 완료! 코인 ${order.reward}개를 받았습니다.`);
+  setStatus(`주문 완료! 코인 ${order.reward}개를 받았습니다.${levels ? ` 레벨 ${state.level} 달성!` : ""}`);
   navigator.vibrate?.([15, 35, 15]);
   render();
 }
@@ -580,6 +598,9 @@ document.querySelector("#catalogRecipes")?.addEventListener("click", () => {
   renderCatalog();
 });
 document.querySelector("#renovateButton")?.addEventListener("click", renovateStage);
+document.querySelector("#shopButton")?.addEventListener("click", () => {
+  setStatus("오프라인 버전에서는 상점·결제 없이 모든 생성기를 사용할 수 있습니다.");
+});
 document.querySelector("#closeStorage").addEventListener("click", () => { document.querySelector("#storagePanel").hidden = true; });
 document.querySelector("#resetButton").addEventListener("click", () => {
   if (confirm("이 기기의 오프라인 진행도를 초기화할까요?")) {
