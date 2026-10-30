@@ -81,7 +81,7 @@ function freshOrder() {
   const stage = DATA.stages?.[stageIndexForOrders] || DATA.firstStage;
   const pool = DATA.stageOrders?.[stage.id] || DATA.stageOrders?.[DATA.firstStage.id] || ["cola", "cherry-juice"];
   const item = pool[Math.floor(Math.random() * pool.length)];
-  return { id: id(), item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
+  return { id: id(), stageId: stage.id, item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
 }
 function initialState() {
   return { version: STATE_VERSION, level: 35, coins: 101, gems: 20, stars: 0, completedOrders: 0, stageIndex: 0, board: emptyBoard(), storage: [], pendingUnlocks: [], unlockedContent: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
@@ -94,6 +94,14 @@ function migrateState(saved) {
     stageIndexForOrders = Number.isInteger(migrated.stageIndex) ? migrated.stageIndex : 0;
     migrated.orders = [freshOrder(), freshOrder(), freshOrder()];
     stageIndexForOrders = previousStage;
+  } else {
+    const currentStageId = DATA.stages?.[migrated.stageIndex]?.id || DATA.firstStage.id;
+    if (migrated.orders.some(order => order.stageId && order.stageId !== currentStageId)) {
+      const previousStage = stageIndexForOrders;
+      stageIndexForOrders = Number.isInteger(migrated.stageIndex) ? migrated.stageIndex : 0;
+      migrated.orders = [freshOrder(), freshOrder(), freshOrder()];
+      stageIndexForOrders = previousStage;
+    }
   }
   if (migrated.level >= 3) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 3 ? null : slot);
   if (migrated.level >= 4) migrated.board = migrated.board.map(slot => slot?.kind === "locked" && slot.level <= 4 ? null : slot);
@@ -421,6 +429,7 @@ function renovateStage() {
     stageIndexForOrders = state.stageIndex;
     state.stars = 0;
     unlockStageContents(state.stageIndex);
+    state.orders = [freshOrder(), freshOrder(), freshOrder()];
     setStatus(`${DATA.stages[state.stageIndex].name} 해금! 식당을 개조했습니다.`);
   } else {
     setStatus(`식당을 개조했습니다. 다음 개조까지 ${20 - state.stars}포인트 남았습니다.`);
