@@ -52,3 +52,33 @@ body { background:#6fc5d7; }
 .stage-actions { display:flex; align-items:center; gap:5px; }
 .stage-actions button { padding:3px 6px; border:1px solid #e0a94d; border-radius:6px; background:#fff4c7; color:#a9641d; font-size:8px; font-weight:1000; }
 .stage-actions button:disabled { opacity:.65; }
+
+/* Reference geometry: keep the live DOM aligned to the licensed 271x591 capture. */
+.game-shell { width:min(100vw,430px); height:min(218.08vw,938px); min-height:0; aspect-ratio:271 / 591; padding:0; overflow:hidden; background:url("reference-game.png") center / 100% 100% no-repeat; }
+.restaurant-scene { display:none; }
+.topbar { position:absolute; z-index:2; top:1.2%; right:1.2%; left:1.2%; height:9%; min-height:0; padding:0 1%; }
+.orders-panel { position:absolute; z-index:2; top:13%; right:2.5%; left:2.5%; height:24%; margin:0; padding:5px 4px 0; border-radius:14px 14px 0 0; background:rgba(255,251,232,.84); box-shadow:0 -2px 0 rgba(255,255,255,.55); }
+.orders-panel .section-heading { min-height:18px; }
+.orders { height:calc(100% - 20px); margin-top:2px; gap:1%; }
+.order { min-height:0; height:53%; padding:3px 2px 2px; }
+.board-area { position:absolute; z-index:2; top:39.2%; right:2.3%; bottom:8.2%; left:2.3%; height:auto; padding:0; background:rgba(255,250,224,.2); }
+.status { position:absolute; z-index:3; top:-16px; right:0; left:0; min-height:14px; margin:0; padding:0 2px; }
+.board { position:absolute; inset:0; height:auto; min-height:0; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(9,1fr); gap:.55%; padding:1.2%; border:4px solid #c99c58; border-radius:9px; }
+.board-actions { position:absolute; z-index:3; right:0; bottom:-38px; left:0; margin:0; }
+.bottom-dock { position:absolute; z-index:4; right:0; bottom:0; left:0; height:8%; padding:0 3% 1%; }
+
+/* Let the supplied capture provide static iconography while keeping live values interactive. */
+.topbar { gap:0; }
+.topbar .profile, .topbar .shop-button { opacity:0; }
+.topbar .resource { position:absolute; min-width:0; width:auto; height:auto; padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.topbar .resource span { display:none; }
+.topbar .resource output { display:inline-block; padding:0 3px; border-radius:6px; background:rgba(255,246,219,.92); color:#9a5a22; font-size:clamp(10px,2.6vw,15px); font-weight:1000; text-shadow:0 1px rgba(255,255,255,.9); }
+.topbar .energy { top:40%; left:23%; }
+.topbar .coin { top:40%; left:43%; }
+.topbar .gem { top:40%; left:74%; }
+.orders-panel { background:transparent; box-shadow:none; }
+.orders-panel .section-heading { opacity:0; }
+.order { border:0; border-radius:0; background:transparent !important; box-shadow:none; }
+.order::before, .order-art, .customer { opacity:0; }
+.order-name { color:#725036; font-size:clamp(8px,1.8vw,11px); text-align:center; }
+.order-reward { color:#d08b29; font-size:clamp(8px,1.7vw,10px); text-align:center; }
