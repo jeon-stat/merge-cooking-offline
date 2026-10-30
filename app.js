@@ -148,6 +148,12 @@ function render() {
   document.querySelector("#stageName")?.replaceChildren(document.createTextNode(stage.name));
   document.querySelector("#stageCountry")?.replaceChildren(document.createTextNode(stage.country || ""));
   document.querySelector("#stageStars")?.replaceChildren(document.createTextNode(`${state.stars}/20`));
+  const renovateButton = document.querySelector("#renovateButton");
+  if (renovateButton) {
+    const cost = 50 + state.stageIndex * 10;
+    renovateButton.textContent = state.stageIndex >= (DATA.stages?.length || 1) - 1 ? "최종 식당" : `개조 ${cost} 🪙`;
+    renovateButton.disabled = state.stageIndex >= (DATA.stages?.length || 1) - 1;
+  }
   document.querySelector("#storageCount").textContent = state.storage.length;
   boardNode.replaceChildren(...state.board.map((slot, index) => renderSlot(slot, index)));
   boardNode.querySelector(`[data-index="${selected}"]`)?.classList.add("selected");
@@ -237,18 +243,26 @@ function fulfillOrder(orderId) {
   else if (storageIndex >= 0) state.storage.splice(storageIndex, 1);
   else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다.`);
   state.coins += order.reward;
-  state.stars += Math.max(1, Math.floor(order.reward / 4));
-  let stageMessage = "";
-  if (state.stars >= 20 && state.stageIndex < (DATA.stages?.length || 1) - 1) {
+  state.orders[index] = freshOrder();
+  setStatus(`주문 완료! 코인 ${order.reward}개를 받았습니다.`);
+  navigator.vibrate?.([15, 35, 15]);
+  render();
+}
+function renovateStage() {
+  if (state.stageIndex >= (DATA.stages?.length || 1) - 1) return setStatus("모든 공개 스테이지를 개조했습니다.");
+  const cost = 50 + state.stageIndex * 10;
+  if (state.coins < cost) return setStatus(`개조에는 코인 ${cost}개가 필요합니다.`);
+  state.coins -= cost;
+  state.stars += 5;
+  if (state.stars >= 20) {
     state.stageIndex += 1;
     stageIndexForOrders = state.stageIndex;
     state.stars = 0;
     unlockStageContents(state.stageIndex);
-    stageMessage = `${DATA.stages[state.stageIndex].name} 해금! `;
+    setStatus(`${DATA.stages[state.stageIndex].name} 해금! 식당을 개조했습니다.`);
+  } else {
+    setStatus(`식당을 개조했습니다. 다음 개조까지 ${20 - state.stars}포인트 남았습니다.`);
   }
-  state.orders[index] = freshOrder();
-  setStatus(`${stageMessage}주문 완료! 코인 ${order.reward}개를 받았습니다.`);
-  navigator.vibrate?.([15, 35, 15]);
   render();
 }
 function storeSelected() {
@@ -273,6 +287,7 @@ document.querySelector("#storageButton").addEventListener("click", () => {
   if (selected !== null) storeSelected();
   else document.querySelector("#storagePanel").hidden = false;
 });
+document.querySelector("#renovateButton")?.addEventListener("click", renovateStage);
 document.querySelector("#closeStorage").addEventListener("click", () => { document.querySelector("#storagePanel").hidden = true; });
 document.querySelector("#resetButton").addEventListener("click", () => {
   if (confirm("이 기기의 오프라인 진행도를 초기화할까요?")) {
