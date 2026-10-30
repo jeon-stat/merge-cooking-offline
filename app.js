@@ -210,6 +210,8 @@ function renderJournal() {
   document.querySelector("#journalCount")?.replaceChildren(document.createTextNode(`${Math.min(state.completedOrders || 0, 35)}/35`));
   const pending = state.pendingUnlocks?.length ? ` · 대기 해금 ${state.pendingUnlocks.length}` : "";
   document.querySelector("#journalSummary")?.replaceChildren(document.createTextNode(`${current.name} · ${current.country || ""} · ${current.focus || ""}${pending}`));
+  const unlocked = (state.unlockedContent || []).map(key => contentUnlockLabels[key] || generatorSlots[key]?.name || stations[key]?.name || key);
+  document.querySelector("#journalUnlocks")?.replaceChildren(document.createTextNode(unlocked.length ? `해금 내용: ${unlocked.join(" · ")}` : "해금 내용 없음"));
   if (!journalStagesNode) return;
   journalStagesNode.replaceChildren(...stages.map((stage, index) => {
     const node = document.createElement("div");
