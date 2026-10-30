@@ -95,7 +95,7 @@ window.MERGE_COOKING_DATA = Object.freeze({
     shaker: Object.freeze([["mimosa", ["champagne", "orange-juice"]], ["pina-colada", ["rum", "coconut", "pineapple-juice"]], ["gin-rickey", ["gin", "sparkling-water", "lemon-juice"]], ["bloody-mary", ["vodka", "tomato"]], ["carimocho", ["wine", "cola", "lemon"]]])
   }),
   stageOrders: Object.freeze({
-    "fruit-juice-bar": Object.freeze(["cola", "cherry-juice", "strawberry-juice", "apple-juice", "lemon-juice", "orange-juice", "strawberry-apple-juice"]),
+    "fruit-juice-bar": Object.freeze(["cola", "cherry-juice", "strawberry-juice", "apple-juice", "lemon-juice", "orange-juice", "strawberry-apple-juice", "mug-coffee", "cold-brew", "french-press"]),
     "takeout-paradise": Object.freeze(["grilled-chicken-wing", "fried-broccoli", "potato-strips", "banana-split", "mackerel", "shrimp"]),
     "incrabible-grill": Object.freeze(["baked-burger-bun", "baked-hot-dog-bun", "apple-pie", "banana-pie"]),
     "food-express": Object.freeze(["pork-burger", "potato-salad", "fried-chicken"]),
