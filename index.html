@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="icon.svg" />
-    <link rel="stylesheet" href="styles.css?v=26" />
+    <link rel="stylesheet" href="styles.css?v=28" />
     <title>Merge Cooking Offline</title>
   </head>
   <body>
@@ -23,11 +23,6 @@
         <div class="resource gem" aria-label="보석"><span aria-hidden="true">💎</span><output id="gems">20</output></div>
         <button class="shop-button" type="button" aria-label="상점">🏪</button>
       </header>
-
-      <section class="stage-strip" aria-label="현재 레스토랑 진행도">
-        <div><strong id="stageName">Fruity Juice Bar</strong><span id="stageCountry">미국</span></div>
-        <div class="stage-actions"><span class="stage-stars">개조 <b id="stageStars">0/20</b></span><button id="renovateButton" type="button">개조 50 🪙</button></div>
-      </section>
 
       <section class="orders-panel" aria-labelledby="ordersTitle">
         <div class="section-heading"><h2 id="ordersTitle">주문</h2><span id="orderHint">완성 아이템을 탭해 납품하세요</span></div>
@@ -50,6 +45,10 @@
       </section>
       <section id="journalPanel" class="journal-panel" hidden aria-label="주문 노트">
         <div class="section-heading"><h2>주문 노트</h2><div class="journal-actions"><button id="openCatalog" type="button">도감</button><button id="closeJournal" type="button">닫기</button></div></div>
+        <div class="journal-current-stage" aria-label="현재 레스토랑 진행도">
+          <div><strong id="stageName">Fruity Juice Bar</strong><span id="stageCountry">미국</span></div>
+          <div class="stage-actions"><span class="stage-stars">개조 <b id="stageStars">0/20</b></span><button id="renovateButton" type="button">개조 50 🪙</button></div>
+        </div>
         <p id="journalSummary">현재 식당의 진행 기록</p>
         <p id="journalUnlocks" class="journal-unlocks"></p>
         <div id="journalStages" class="journal-stages"></div>
@@ -65,7 +64,7 @@
       </nav>
     </main>
     <template id="itemTemplate"><button class="tile" type="button"></button></template>
-  <script src="game-data.js?v=26"></script>
-  <script src="app.js?v=26"></script>
+  <script src="game-data.js?v=28"></script>
+  <script src="app.js?v=28"></script>
   </body>
 </html>

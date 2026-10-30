@@ -44,10 +44,10 @@ body { background:#6fc5d7; }
 .tile.item,.tile.generator-tile,.tile.station-tile,.tile.locked-tile { opacity:1; }
 
 /* Stage progression is compact so it does not obscure the play board. */
-.stage-strip { position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; margin:3px 4px 0; padding:4px 8px; border:2px solid rgba(255,255,255,.85); border-radius:10px; background:linear-gradient(135deg,rgba(255,248,216,.95),rgba(250,224,181,.9)); box-shadow:0 2px 0 rgba(102,76,45,.16); color:#7a5237; font-size:9px; font-weight:900; }
-.stage-strip div { display:flex; align-items:baseline; gap:5px; min-width:0; }
-.stage-strip strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
-.stage-strip div span { color:#a07857; font-size:8px; }
+.journal-current-stage { display:flex; align-items:center; justify-content:space-between; margin:7px 0 4px; padding:6px 8px; border:2px solid rgba(255,255,255,.85); border-radius:10px; background:linear-gradient(135deg,rgba(255,248,216,.95),rgba(250,224,181,.9)); box-shadow:0 2px 0 rgba(102,76,45,.16); color:#7a5237; font-size:9px; font-weight:900; }
+.journal-current-stage > div:first-child { display:flex; align-items:baseline; gap:5px; min-width:0; }
+.journal-current-stage strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
+.journal-current-stage div span { color:#a07857; font-size:8px; }
 .stage-stars { color:#bb7624; white-space:nowrap; }
 .stage-actions { display:flex; align-items:center; gap:5px; }
 .stage-actions button { padding:3px 6px; border:1px solid #e0a94d; border-radius:6px; background:#fff4c7; color:#a9641d; font-size:8px; font-weight:1000; }

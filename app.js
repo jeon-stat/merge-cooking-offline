@@ -376,7 +376,7 @@ function useStation(index) {
   const recipes = DATA.recipes[station.id] || [];
   const isPossible = recipes.some(([, ingredients]) => candidate.length <= ingredients.length && containsIngredients(ingredients, candidate));
   if (!isPossible) return setStatus(`${name(ingredient)}은(는) ${stations[station.id].name}의 현재 레시피와 맞지 않습니다.`);
-  const outputIndex = emptyIndex();
+  const outputIndex = emptyIndex() >= 0 ? emptyIndex() : selected;
   if (outputIndex < 0) return setStatus("완성 아이템을 놓을 빈 칸이 필요합니다.");
   state.board[selected] = null;
   station.ingredients = candidate;
