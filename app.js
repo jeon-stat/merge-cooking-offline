@@ -44,7 +44,7 @@ const contentUnlockLabels = {
   "japanese-attractions": "일본 명소",
   "japanese-recipe-book": "일본 레시피 북"
 };
-const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", fish: "어류", shellfish: "패류" };
+const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", vegetable: "채소", leafy: "잎채소", fish: "어류", shellfish: "패류" };
 let stageIndexForOrders = 0;
 let dragStart = null;
 let suppressNextClick = false;

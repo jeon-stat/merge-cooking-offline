@@ -12,6 +12,7 @@
  * - https://w.atwiki.jp/mergecooking/pages/35.html (shaker recipes)
  * - https://w.atwiki.jp/mergecooking/pages/30.html (cooking pot recipes)
  */
+/* Confirmed chain extensions are kept beside their public-source links below. */
 window.MERGE_COOKING_DATA = Object.freeze({
   target: Object.freeze({
     name: "Merge Cooking: Theme Restaurant",
@@ -28,6 +29,10 @@ window.MERGE_COOKING_DATA = Object.freeze({
     shaker: "https://w.atwiki.jp/mergecooking/pages/35.html",
     pot: "https://w.atwiki.jp/mergecooking/pages/30.html",
     ship: "https://w.atwiki.jp/mergecooking/pages/34.html",
+    proteinGenerator: "https://w.atwiki.jp/merge_cooking/pages/21.html",
+    poultry: "https://w.atwiki.jp/merge_cooking/pages/22.html",
+    vegetableGenerator: "https://w.atwiki.jp/merge_cooking/pages/27.html",
+    vegetables: "https://w.atwiki.jp/mergecooking/pages/24.html",
     video: "https://www.youtube.com/watch?v=YCke1icPTKU"
   }),
   firstStage: Object.freeze({
@@ -55,10 +60,13 @@ window.MERGE_COOKING_DATA = Object.freeze({
     nut: Object.freeze(["sesame", "peanut", "pistachio", "cacao-bean", "almond", "pecan", "walnut", "cashew", "date", "pine-nut"]),
     softDrink: Object.freeze(["water", "sparkling-water", "cola", "soda", "orange-soda", "grape-soda", "black-tea", "green-tea", "herbal-tea", "yogurt-drink", "bubble-tea", "energy-drink"]),
     coffee: Object.freeze(["coffee-bean", "ground-coffee", "cup-coffee", "mug-coffee", "takeaway-coffee", "cold-brew", "drip-coffee", "french-press", "moka-pot", "siphon-coffee"]),
+    poultry: Object.freeze(["egg", "chicken-wing", "chicken-drumstick", "chicken-breast", "whole-chicken", "duck-breast", "whole-duck", "goose", "quail", "turkey"]),
+    vegetable: Object.freeze(["tomato", "cucumber", "asparagus", "carrot", "onion", "bell-pepper", "eggplant", "potato", "okra", "corn", "pea", "cherry-tomato"]),
+    leafy: Object.freeze(["lettuce", "cabbage", "broccoli", "red-cabbage", "cauliflower", "arugula", "spinach", "beet", "mushroom"]),
     fish: Object.freeze(["mackerel", "squid", "tilapia", "eel", "cod", "salmon", "flounder", "tuna", "mullet", "bass", "sea-bream"]),
     shellfish: Object.freeze(["clam", "mussel", "oyster", "shrimp", "crab", "scallop", "escargot", "lobster", "king-crab", "abalone"])
   }),
-  items: Object.freeze({
+  items: Object.freeze(Object.assign({
     cherry: ["체리", "🍒"], strawberry: ["딸기", "🍓"], apple: ["사과", "🍎"], banana: ["바나나", "🍌"], lemon: ["레몬", "🍋"], coconut: ["코코넛", "🥥"], orange: ["오렌지", "🍊"], pomegranate: ["석류", "🫐"], pear: ["배", "🍐"], mango: ["망고", "🥭"], pineapple: ["파인애플", "🍍"], watermelon: ["수박", "🍉"],
     sesame: ["참깨", "🫘"], peanut: ["땅콩", "🥜"], pistachio: ["피스타치오", "🫛"], "cacao-bean": ["카카오콩", "🫘"], almond: ["아몬드", "🥜"], pecan: ["피칸", "🌰"], walnut: ["호두", "🌰"], cashew: ["캐슈넛", "🥜"], date: ["대추야자", "🫒"], "pine-nut": ["잣", "🫘"],
     water: ["물", "💧"], "sparkling-water": ["탄산수", "🫧"], cola: ["콜라", "🥤"], soda: ["소다", "🥤"], "orange-soda": ["오렌지 소다", "🥤"], "grape-soda": ["포도 소다", "🥤"], "black-tea": ["홍차", "🫖"], "green-tea": ["녹차", "🍵"], "herbal-tea": ["허브티", "🫖"], "yogurt-drink": ["유산균 음료", "🧃"], "bubble-tea": ["버블티", "🧋"], "energy-drink": ["에너지 드링크", "⚡"], "ice-cube": ["얼음", "🧊"],
@@ -66,7 +74,10 @@ window.MERGE_COOKING_DATA = Object.freeze({
     "cherry-juice": ["체리 주스", "🧃"], "strawberry-juice": ["딸기 주스", "🧃"], "apple-juice": ["사과 주스", "🧃"], "banana-juice": ["바나나 주스", "🧃"], "lemon-juice": ["레몬 주스", "🧃"], "orange-juice": ["오렌지 주스", "🧃"], "pomegranate-juice": ["석류 주스", "🧃"], "pear-juice": ["배 주스", "🧃"], "mango-juice": ["망고 주스", "🧃"], "pineapple-juice": ["파인애플 주스", "🧃"], "watermelon-juice": ["수박 주스", "🧃"],
     "strawberry-apple-juice": ["딸기 사과 주스", "🧃"], "strawberry-lemon-juice": ["딸기 레몬 주스", "🧃"], "banana-orange-juice": ["바나나 오렌지 주스", "🧃"], "apple-lemon-juice": ["사과 레몬 주스", "🧃"], "pear-apple-banana-juice": ["배 사과 바나나 주스", "🧃"],
     "chicken-wing": ["닭날개", "🍗"], "chicken-drumstick": ["닭다리", "🍗"], "chicken-breast": ["닭가슴살", "🍗"], "pork-chop": ["돼지 갈비", "🥩"], "beef-cube": ["소고기 큐브", "🥩"], "spinach": ["시금치", "🥬"], "broccoli": ["브로콜리", "🥦"], "carrot": ["당근", "🥕"], "potato": ["감자", "🥔"], "wheat-flour": ["밀가루", "🌾"], "bread-dough": ["빵 반죽", "🍞"], "toast-dough": ["토스트 반죽", "🍞"], "pie-crust": ["파이 크러스트", "🥧"], "grape": ["포도", "🍇"], "wine": ["와인", "🍷"], "tangerine-wine": ["귤 와인", "🍷"], "rum": ["럼", "🍹"], "brandy": ["브랜디", "🥃"], "gin": ["진", "🍸"], "champagne": ["샴페인", "🍾"], "vodka": ["보드카", "🍸"], "absinthe": ["압생트", "🥃"], "whiskey": ["위스키", "🥃"], "mackerel": ["고등어", "🐟"], "squid": ["오징어", "🦑"], "tilapia": ["틸라피아", "🐟"], "eel": ["장어", "🐟"], "cod": ["대구", "🐟"], "salmon": ["연어", "🐟"], "flounder": ["광어", "🐟"], "fish": ["생선", "🐟"], "mullet": ["숭어", "🐟"], "bass": ["농어", "🐟"], "sea-bream": ["도미", "🐟"], "clam": ["조개", "🦪"], "mussel": ["홍합", "🦪"], "oyster": ["굴", "🦪"], "shrimp": ["새우", "🦐"], "crab": ["게", "🦀"], "scallop": ["가리비", "🦪"], "escargot": ["달팽이", "🐌"], "lobster": ["랍스터", "🦞"], "king-crab": ["킹크랩", "🦀"], "abalone": ["전복", "🐚"], "tuna": ["참치", "🐟"], "shellfish": ["조개류", "🦪"], "asparagus": ["아스파라거스", "🥬"], "ham": ["햄", "🍖"], "patty": ["패티", "🍔"], "beef-rib": ["소갈비", "🥩"], "burger-bun": ["버거 번", "🍔"], "hot-dog-bun": ["핫도그 번", "🌭"], "tomato": ["토마토", "🍅"], "cucumber": ["오이", "🥒"], "lettuce": ["양상추", "🥬"], "banana-split": ["바나나 스플릿", "🍨"], "fried-chicken": ["프라이드 치킨", "🍗"], "potato-salad": ["감자 샐러드", "🥗"], "fried-asparagus": ["구운 아스파라거스", "🥬"], "fried-broccoli": ["구운 브로콜리", "🥦"], "fried-ham": ["구운 햄", "🍖"], "potato-strips": ["감자 스트립", "🍟"], "grilled-chicken-wing": ["구운 닭날개", "🍗"], "grilled-chicken-breast": ["구운 닭가슴살", "🍗"], "grilled-patty": ["구운 패티", "🍔"], "grilled-beef-ribs": ["구운 소갈비", "🥩"], "baked-burger-bun": ["구운 버거 번", "🍔"], "baked-hot-dog-bun": ["구운 핫도그 번", "🌭"], "apple-pie": ["사과 파이", "🥧"], "banana-pie": ["바나나 파이", "🥧"], "toast": ["토스트", "🍞"], "tomato-slice": ["토마토 슬라이스", "🍅"], "cucumber-slice": ["오이 슬라이스", "🥒"], "pork-burger": ["포크 버거", "🍔"], "pot-au-feu": ["포토푀", "🍲"], "bouillabaisse": ["부야베스", "🍲"], "mimosa": ["미모사", "🍹"], "pina-colada": ["피냐 콜라다", "🍹"], "gin-rickey": ["진 리키", "🍸"], "bloody-mary": ["블러디 메리", "🍹"], "carimocho": ["칼리모초", "🍷"]
-  }),
+  }, {
+    egg: ["달걀", "🥚"], "whole-chicken": ["통닭", "🍗"], "duck-breast": ["오리 가슴살", "🍗"], "whole-duck": ["통오리", "🦆"], goose: ["거위", "🪿"], quail: ["메추리", "🐦"], turkey: ["칠면조", "🦃"],
+    onion: ["양파", "🧅"], "bell-pepper": ["피망", "🫑"], eggplant: ["가지", "🍆"], okra: ["오크라", "🌿"], corn: ["옥수수", "🌽"], pea: ["완두콩", "🫛"], "cherry-tomato": ["방울토마토", "🍅"], cabbage: ["양배추", "🥬"], "red-cabbage": ["적양배추", "🥬"], cauliflower: ["콜리플라워", "🥦"], arugula: ["루꼴라", "🥬"], beet: ["비트", "🫜"], mushroom: ["버섯", "🍄"]
+  })),
   generators: Object.freeze({
     "drink-generator": Object.freeze({
       title: "음료 생성기", artwork: "🥤", source: "https://w.atwiki.jp/merge_cooking/pages/16.html",
