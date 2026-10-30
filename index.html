@@ -8,26 +8,24 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="icon.svg" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=3" />
     <title>Merge Cooking Offline</title>
   </head>
   <body>
     <main class="game-shell">
+      <div class="restaurant-scene" aria-hidden="true">
+        <span class="scene-awning"></span><span class="scene-window"></span><span class="scene-counter"></span>
+      </div>
       <header class="topbar" aria-label="게임 상태">
-        <div class="profile"><span class="portrait" aria-hidden="true">👩🏻‍🍳</span><output id="level">2</output></div>
+        <div class="profile"><output id="level">35</output></div>
         <div class="resource energy" aria-label="무한 에너지"><span aria-hidden="true">⚡</span><output>∞</output></div>
-        <div class="resource coin" aria-label="코인"><span aria-hidden="true">🪙</span><output id="coins">8</output></div>
-        <div class="resource gem" aria-label="보석"><span aria-hidden="true">💎</span><output id="gems">100</output></div>
-        <button class="round-button" id="resetButton" type="button" aria-label="오프라인 진행 초기화">↺</button>
+        <div class="resource coin" aria-label="코인"><span aria-hidden="true">🪙</span><output id="coins">101</output></div>
+        <div class="resource gem" aria-label="보석"><span aria-hidden="true">💎</span><output id="gems">20</output></div>
+        <button class="shop-button" type="button" aria-label="상점">🏪</button>
       </header>
 
-      <section class="stage-strip" aria-label="현재 레스토랑">
-        <div><span class="eyebrow">STAGE 01</span><h1>과일 주스 바</h1><p>Lea의 첫 번째 레스토랑</p></div>
-        <div class="stage-art" aria-hidden="true">🍹</div>
-      </section>
-
       <section class="orders-panel" aria-labelledby="ordersTitle">
-        <div class="section-heading"><h2 id="ordersTitle">주문</h2><span id="orderHint">완성된 아이템을 탭해 납품</span></div>
+        <div class="section-heading"><h2 id="ordersTitle">주문</h2><span id="orderHint">완성 아이템을 탭해 납품하세요</span></div>
         <div id="orders" class="orders" aria-live="polite"></div>
       </section>
 
@@ -45,9 +43,13 @@
         <p>아이템을 탭하면 빈 보드 칸으로 되돌립니다.</p>
         <div id="storage" class="storage-grid"></div>
       </section>
+      <nav class="bottom-dock" aria-label="게임 메뉴">
+        <button class="quest-button" type="button" aria-label="주문 노트">📔<b>0/35</b></button>
+        <button id="resetButton" class="home-button" type="button" aria-label="오프라인 진행 초기화">🏠<i>!</i></button>
+      </nav>
     </main>
     <template id="itemTemplate"><button class="tile" type="button"></button></template>
-  <script src="game-data.js?v=2"></script>
-  <script src="app.js?v=2"></script>
+  <script src="game-data.js?v=3"></script>
+  <script src="app.js?v=3"></script>
   </body>
 </html>
