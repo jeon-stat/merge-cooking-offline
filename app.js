@@ -54,8 +54,8 @@ document.addEventListener("mouseup", event => finishDrag(event.clientX, event.cl
 
 function emptyBoard() {
   const board = Array(COLS * ROWS).fill(null);
-  board[1] = { kind: "generator", id: "fruit-nut-generator" };
-  board[4] = { kind: "generator", id: "drink-generator" };
+  board[1] = { kind: "generator", id: "fruit-nut-generator", level: 6 };
+  board[4] = { kind: "generator", id: "drink-generator", level: 6 };
   board[44] = { kind: "station", id: "juicer", ingredients: [] };
   board[46] = { kind: "station", id: "chef-counter", ingredients: [] };
   board[31] = { kind: "locked", level: 3 };
@@ -97,7 +97,7 @@ function unlockStageContents(stageIndex) {
     const target = emptyIndex();
     if (target < 0) break;
     state.board[target] = isGenerator
-      ? { kind: "generator", id: unlock }
+      ? { kind: "generator", id: unlock, level: generatorSlots[unlock].level }
       : { kind: "station", id: unlock, ingredients: [] };
     present.add(unlock);
   }
@@ -120,7 +120,7 @@ function containsIngredients(recipe, candidate) {
 function tileLabel(slot) {
   if (!slot) return "빈 칸";
   if (slot.kind === "item") return name(slot.id);
-  if (slot.kind === "generator") return generatorSlots[slot.id].name;
+  if (slot.kind === "generator") return `${generatorSlots[slot.id].name} Lv.${slot.level || generatorSlots[slot.id].level}`;
   if (slot.kind === "locked") return `레벨 ${slot.level}에서 잠금 해제`;
   return stations[slot.id].name;
 }
@@ -135,7 +135,7 @@ function renderSlot(slot, index, inStorage = false) {
   } else if (slot.kind === "generator") {
     const generator = generatorSlots[slot.id];
     node.classList.add("generator-tile", slot.id);
-    node.innerHTML = `<span class="station-art">${generator.art}</span><span class="item-name">${generator.name}</span><span class="item-level">Lv.${generator.level}</span>`;
+    node.innerHTML = `<span class="station-art">${generator.art}</span><span class="item-name">${generator.name}</span><span class="item-level">Lv.${slot.level || generator.level}</span>`;
   } else if (slot.kind === "locked") {
     node.classList.add("locked-tile");
     node.innerHTML = `<span class="lock-art">☁️</span><span class="locked-level">LV.${slot.level}</span>`;
@@ -146,7 +146,7 @@ function renderSlot(slot, index, inStorage = false) {
     node.innerHTML = `<span class="station-art">${station.art}</span><span class="item-name">${station.name}</span><span class="station-contents">${ingredientText}</span>`;
   }
   node.addEventListener("pointerdown", event => {
-    if (inStorage || !slot || slot.kind !== "item") return;
+    if (inStorage || !slot || !["item", "generator"].includes(slot.kind)) return;
     dragStart = { index, x: event.clientX, y: event.clientY };
   });
   node.addEventListener("click", () => {
@@ -190,7 +190,7 @@ function render() {
 function tapSlot(index) {
   const slot = state.board[index];
   if (!slot) return;
-  if (slot.kind === "generator") return produce(slot.id);
+  if (slot.kind === "generator") return produce(slot.id, index);
   if (slot.kind === "locked") return setStatus(`이 칸은 레벨 ${slot.level}에서 열립니다.`);
   if (slot.kind === "station") return useStation(index);
   if (selected === null) {
@@ -207,11 +207,19 @@ function tapSlot(index) {
 function moveOrMerge(from, to) {
   const source = state.board[from];
   const target = state.board[to];
-  if (!isItem(source) || from === to) return;
+  if (from === to || !source) return;
   if (!target) {
     state.board[to] = source;
     state.board[from] = null;
-    setStatus(`${name(source.id)}을(를) 옮겼습니다.`);
+    setStatus(`${source.kind === "item" ? name(source.id) : generatorSlots[source.id].name}을(를) 옮겼습니다.`);
+  } else if (source.kind === "generator" && target.kind === "generator" && source.id === target.id && (source.level || 1) === (target.level || 1)) {
+    const nextLevel = (source.level || 1) + 1;
+    state.board[to] = { kind: "generator", id: source.id, level: nextLevel };
+    state.board[from] = null;
+    setStatus(`${generatorSlots[source.id].name} Lv.${source.level} + Lv.${target.level} → Lv.${nextLevel}!`);
+    navigator.vibrate?.(20);
+  } else if (!isItem(source)) {
+    setStatus("같은 생성기 두 개를 드래그하면 레벨이 올라갑니다.");
   } else if (isItem(target) && source.id === target.id && nextItem[source.id]) {
     const result = nextItem[source.id];
     state.board[to] = { kind: "item", id: result };
@@ -223,12 +231,14 @@ function moveOrMerge(from, to) {
   }
   selected = null;
 }
-function produce(generatorId) {
+function produce(generatorId, sourceIndex) {
   const target = emptyIndex();
   if (target < 0) return setStatus("보드가 가득 찼습니다. 아이템을 병합하거나 보관하세요.");
   const generator = DATA.generators[generatorId];
-  const level = generatorSlots[generatorId].level;
-  const output = generator.outputs[level];
+  const level = state.board[sourceIndex]?.level || generatorSlots[generatorId].level;
+  const availableLevels = Object.keys(generator.outputs).map(Number).filter(value => value <= level).sort((a, b) => b - a);
+  const output = generator.outputs[level] || generator.outputs[availableLevels[0]];
+  if (!output?.length) return setStatus(`${generator.title}의 공개 출력 데이터가 없습니다.`);
   const item = output[Math.floor(Math.random() * output.length)];
   state.board[target] = { kind: "item", id: item };
   selected = null;
