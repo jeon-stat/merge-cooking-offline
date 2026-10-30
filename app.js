@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 10;
+const STATE_VERSION = 11;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -31,16 +31,6 @@ const generatorSlots = {
   "tourist-bag": { name: "관광객 가방", art: "🧳", level: 7 },
   "italian-themed-vehicle": { name: "이탈리아 테마 차량", art: "🚗", level: 7 },
   "pasta-mold-set": { name: "파스타 몰드 세트", art: "🧰", level: 1 },
-  "pasta-mold-ravioli": { name: "라비올리 몰드", art: "🧰", level: 1 },
-  "pasta-mold-bigoli": { name: "비골리 몰드", art: "🧰", level: 1 },
-  "pasta-mold-fusilli": { name: "푸실리 몰드", art: "🧰", level: 1 },
-  "pasta-mold-farfalle": { name: "파르팔레 몰드", art: "🧰", level: 1 },
-  "pasta-mold-tagliatelle": { name: "탈리아텔레 몰드", art: "🧰", level: 1 },
-  "pasta-mold-spaghetti": { name: "스파게티 몰드", art: "🧰", level: 1 },
-  "pasta-mold-rigatoni": { name: "리가토니 몰드", art: "🧰", level: 1 },
-  "pasta-mold-penne": { name: "펜네 몰드", art: "🧰", level: 1 },
-  "pasta-mold-orecchiette": { name: "오레키에테 몰드", art: "🧰", level: 1 },
-  "pasta-mold-conchiglie": { name: "콘킬리에 몰드", art: "🧰", level: 1 },
   "japanese-attractions": { name: "일본의 매력", art: "⛩️", level: 6 },
   mussel: { name: "홍합 파생기", art: "🦪", level: 1 },
   "bamboo-stalks": { name: "대나무 장대", art: "🎋", level: 1 },
@@ -55,6 +45,7 @@ const stations = {
   pan: { name: "프라이팬", art: "🍳" },
   grill: { name: "그릴 머신", art: "🔥" },
   oven: { name: "오븐", art: "♨️" },
+  "noodle-maker": { name: "면 제조기", art: "🍝" },
   shaker: { name: "셰이커", art: "🍸" },
   pot: { name: "조리 냄비", art: "🍲" },
   "glass-bowl": { name: "유리 그릇", art: "🥣" },
@@ -69,7 +60,8 @@ const contentUnlockLabels = {
   "japanese-attractions": "일본의 매력",
   "japanese-recipe-book": "일본 레시피 북",
   "italian-themed-vehicle": "이탈리아 테마 차량",
-  "italian-recipe-book": "이탈리아 레시피 북"
+  "italian-recipe-book": "이탈리아 레시피 북",
+  "noodle-maker": "면 제조기"
 };
 const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", pork: "돼지·양고기", beef: "소고기 파생품", vegetable: "채소", leafy: "잎채소", grain: "곡물", dough: "반죽 파생품", fish: "어류", shellfish: "패류", baggage: "관광객 기념품", italianHandcraft: "이탈리아 수공예", bamboo: "대나무 제품", fox: "여우 기념품", musselProducts: "홍합 파생품" };
 let stageIndexForOrders = 0;
