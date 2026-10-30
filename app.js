@@ -256,6 +256,8 @@ function renderJournal() {
   document.querySelector("#journalCount")?.replaceChildren(document.createTextNode(`${Math.min(state.completedOrders || 0, 35)}/35`));
   const pending = state.pendingUnlocks?.length ? ` · 대기 해금 ${state.pendingUnlocks.length}` : "";
   document.querySelector("#journalSummary")?.replaceChildren(document.createTextNode(`${current.name} · ${current.country || ""} · ${current.focus || ""}${pending}`));
+  const stageUnlocks = (current.unlocks || []).map(key => contentUnlockLabels[key] || generatorSlots[key]?.name || stations[key]?.name || key);
+  document.querySelector("#journalStageUnlocks")?.replaceChildren(document.createTextNode(stageUnlocks.length ? `이 식당에서 확인된 해금: ${stageUnlocks.join(" · ")}` : "이 식당의 신규 해금은 공개 자료에서 확인되지 않았습니다."));
   const unlocked = (state.unlockedContent || []).map(key => contentUnlockLabels[key] || generatorSlots[key]?.name || stations[key]?.name || key);
   document.querySelector("#journalUnlocks")?.replaceChildren(document.createTextNode(unlocked.length ? `해금 내용: ${unlocked.join(" · ")}` : "해금 내용 없음"));
   if (!journalStagesNode) return;

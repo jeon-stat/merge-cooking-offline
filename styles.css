@@ -82,3 +82,4 @@ body { background:#6fc5d7; }
 .order::before, .order-art, .customer { opacity:0; }
 .order-name { color:#725036; font-size:clamp(8px,1.8vw,11px); text-align:center; }
 .order-reward { color:#d08b29; font-size:clamp(8px,1.7vw,10px); text-align:center; }
+.journal-stage-unlocks { padding:6px 7px; border-radius:7px; background:rgba(231,247,240,.78); color:#4f8175 !important; font-size:9px !important; line-height:1.35; }

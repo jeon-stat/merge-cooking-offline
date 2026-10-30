@@ -43,17 +43,17 @@ window.MERGE_COOKING_DATA = Object.freeze({
   }),
   stages: Object.freeze([
     Object.freeze({ id: "fruit-juice-bar", name: "Fruity Juice Bar", country: "미국", unlocks: Object.freeze(["drink-generator", "fruit-nut-generator", "juicer", "chef-counter"]), focus: "fruit juice, coffee", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
-    Object.freeze({ id: "takeout-paradise", name: "Takeout Paradise", country: "미국", unlocks: Object.freeze(["protein-generator", "vegetable-generator", "ship", "pan", "grill", "bbq-recipe-book", "glass-bowl"]), focus: "grilled vegetables, meat, seafood, salads" }),
-    Object.freeze({ id: "incrabible-grill", name: "inCRABible Grill", country: "미국", unlocks: Object.freeze(["grain-generator", "oven", "tourist-bag"]), focus: "burgers, hot dogs, tarts" }),
-    Object.freeze({ id: "food-express", name: "Food Express", country: "미국", unlocks: Object.freeze([]), focus: "burgers, hot dogs, salads, fried food" }),
-    Object.freeze({ id: "epic-chicken", name: "Epic Chicken", country: "미국", unlocks: Object.freeze([]), focus: "fried chicken, beef" }),
-    Object.freeze({ id: "taste-of-aloha", name: "Taste of Aloha", country: "미국", unlocks: Object.freeze(["alcohol-generator", "shaker"]), focus: "mixed drinks, tropical fruit" }),
-    Object.freeze({ id: "wild-west-saloon", name: "Wild West Saloon", country: "미국", unlocks: Object.freeze([]), focus: "greens, mushrooms, wine" }),
-    Object.freeze({ id: "bon-appetit", name: "Bon Appétit Restaurant", country: "프랑스", unlocks: Object.freeze(["french-recipe-book", "collection-catalog", "pot"]), focus: "French recipes" }),
-    Object.freeze({ id: "dreaming-macaron", name: "Dreaming Macaron", country: "프랑스", unlocks: Object.freeze(["french-recipe-book"]), focus: "French desserts" }),
-    Object.freeze({ id: "little-marseille", name: "Little Marseille", country: "프랑스", unlocks: Object.freeze([]), focus: "French seafood" }),
-    Object.freeze({ id: "izakaya", name: "Izakaya", country: "일본", unlocks: Object.freeze(["japanese-attractions", "japanese-recipe-book"]), focus: "Japanese dishes" }),
-    Object.freeze({ id: "sakura-wagashi", name: "Sakura & Wagashi", country: "일본", unlocks: Object.freeze([]), focus: "Japanese sweets" })
+    Object.freeze({ id: "takeout-paradise", name: "Takeout Paradise", country: "미국", unlocks: Object.freeze(["protein-generator", "vegetable-generator", "ship", "pan", "grill", "bbq-recipe-book", "glass-bowl"]), focus: "grilled vegetables, meat, seafood, salads", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "incrabible-grill", name: "inCRABible Grill", country: "미국", unlocks: Object.freeze(["grain-generator", "oven", "tourist-bag"]), focus: "burgers, hot dogs, tarts", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "food-express", name: "Food Express", country: "미국", unlocks: Object.freeze([]), focus: "burgers, hot dogs, salads, fried food", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "epic-chicken", name: "Epic Chicken", country: "미국", unlocks: Object.freeze([]), focus: "fried chicken, beef", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "taste-of-aloha", name: "Taste of Aloha", country: "미국", unlocks: Object.freeze(["alcohol-generator", "shaker"]), focus: "mixed drinks, tropical fruit", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "wild-west-saloon", name: "Wild West Saloon", country: "미국", unlocks: Object.freeze([]), focus: "greens, mushrooms, wine", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "bon-appetit", name: "Bon Appétit Restaurant", country: "프랑스", unlocks: Object.freeze(["french-recipe-book", "collection-catalog", "pot"]), focus: "French recipes", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "dreaming-macaron", name: "Dreaming Macaron", country: "프랑스", unlocks: Object.freeze(["french-recipe-book"]), focus: "French desserts", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "little-marseille", name: "Little Marseille", country: "프랑스", unlocks: Object.freeze([]), focus: "French seafood", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "izakaya", name: "Izakaya", country: "일본", unlocks: Object.freeze(["japanese-attractions", "japanese-recipe-book"]), focus: "Japanese dishes", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
+    Object.freeze({ id: "sakura-wagashi", name: "Sakura & Wagashi", country: "일본", unlocks: Object.freeze([]), focus: "Japanese sweets", source: "https://w.atwiki.jp/mergecooking/pages/37.html" })
   ]),
   chains: Object.freeze({
     fruit: Object.freeze(["cherry", "strawberry", "apple", "banana", "lemon", "coconut", "orange", "pomegranate", "pear", "mango", "pineapple", "watermelon"]),
