@@ -29,6 +29,11 @@ const generatorSlots = {
   "big-dough": { name: "큰 반죽", art: "🍞", level: 1 },
   "alcohol-generator": { name: "알코올 생성기", art: "🍷", level: 6 },
   "japanese-attractions": { name: "일본의 매력", art: "⛩️", level: 6 },
+  mussel: { name: "홍합 파생기", art: "🦪", level: 1 },
+  "bamboo-stalks": { name: "대나무 장대", art: "🎋", level: 1 },
+  "matcha-tea-set": { name: "다도 세트", art: "🍵", level: 1 },
+  "fox-statue": { name: "여우 장식상", art: "🦊", level: 1 },
+  "bucket-of-rice": { name: "밥 양동이", art: "🍚", level: 1 },
   ship: { name: "배", art: "🚢", level: 6 }
 };
 const stations = {
@@ -39,7 +44,8 @@ const stations = {
   oven: { name: "오븐", art: "♨️" },
   shaker: { name: "셰이커", art: "🍸" },
   pot: { name: "조리 냄비", art: "🍲" },
-  "glass-bowl": { name: "유리 그릇", art: "🥣" }
+  "glass-bowl": { name: "유리 그릇", art: "🥣" },
+  "sushi-rolling-mat": { name: "초밥용 발", art: "🍣" }
 };
 const contentUnlockLabels = {
   "bbq-recipe-book": "BBQ 레시피북",
@@ -50,7 +56,7 @@ const contentUnlockLabels = {
   "japanese-attractions": "일본 명소",
   "japanese-recipe-book": "일본 레시피 북"
 };
-const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", pork: "돼지·양고기", beef: "소고기 파생품", vegetable: "채소", leafy: "잎채소", grain: "곡물", dough: "반죽 파생품", fish: "어류", shellfish: "패류", bamboo: "대나무 제품", fox: "여우 기념품" };
+const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", pork: "돼지·양고기", beef: "소고기 파생품", vegetable: "채소", leafy: "잎채소", grain: "곡물", dough: "반죽 파생품", fish: "어류", shellfish: "패류", bamboo: "대나무 제품", fox: "여우 기념품", musselProducts: "홍합 파생품" };
 let stageIndexForOrders = 0;
 let dragStart = null;
 let suppressNextClick = false;
@@ -344,6 +350,7 @@ function tapSlot(index) {
     return;
   }
   if (slot.kind === "generator") return produce(slot.id, index);
+  if (slot.kind === "item" && DATA.generators?.[slot.id]) return produce(slot.id, index);
   if (slot.kind === "locked") return setStatus(`이 칸은 레벨 ${slot.level}에서 열립니다.`);
   if (slot.kind === "station") return useStation(index);
   if (selected === null) {
@@ -393,7 +400,9 @@ function produce(generatorId, sourceIndex) {
   const output = generator.outputs[level] || generator.outputs[availableLevels[0]];
   if (!output?.length) return setStatus(`${generator.title}의 공개 출력 데이터가 없습니다.`);
   const item = output[Math.floor(Math.random() * output.length)];
-  state.board[target] = { kind: "item", id: item };
+  state.board[target] = stations[item]
+    ? { kind: "station", id: item, ingredients: [] }
+    : { kind: "item", id: item };
   selected = null;
   setStatus(`${generator.title}에서 ${name(item)}이(가) 나왔습니다.`);
   navigator.vibrate?.(10);
