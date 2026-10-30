@@ -510,6 +510,7 @@ document.querySelector("#resetButton").addEventListener("click", () => {
   if (confirm("이 기기의 오프라인 진행도를 초기화할까요?")) {
     stageIndexForOrders = 0;
     state = initialState();
+    unlockStageContents(0);
     selected = null;
     setStatus("첫 번째 레스토랑을 다시 시작합니다.");
     render();
