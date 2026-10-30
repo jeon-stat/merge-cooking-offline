@@ -1,135 +1,243 @@
-/* Personal offline build. Game state stays only in this browser's localStorage. */
-const WIDTH = 7;
-const HEIGHT = 6;
-const KEY = "chefs-table-offline-v1";
-
-const ITEMS = {
-  berry: ["🍒", "체리"], berry2: ["🍓", "베리 접시"], berry3: ["🍰", "베리 타르트"], berry4: ["🥞", "브런치 팬케이크"],
-  egg: ["🥚", "달걀"], egg2: ["🧈", "버터 달걀"], egg3: ["🍳", "계란 프라이"], egg4: ["🥚", "에그 베네딕트"],
-  leaf: ["🥬", "채소"], leaf2: ["🥗", "샐러드"], leaf3: ["🥪", "클럽 샌드위치"],
-  coffee: ["☕", "커피콩"], coffee2: ["🫘", "갈아낸 원두"], coffee3: ["☕", "라테"],
-  toast: ["🍞", "식빵"], toast2: ["🥐", "구운 빵"], toast3: ["🍞", "브런치 토스트"]
-};
-const NEXT = { berry: "berry2", berry2: "berry3", berry3: "berry4", egg: "egg2", egg2: "egg3", egg3: "egg4", leaf: "leaf2", leaf2: "leaf3", coffee: "coffee2", coffee2: "coffee3", toast: "toast2", toast2: "toast3" };
-const GENERATORS = { fruit: ["berry", "berry", "leaf"], pantry: ["egg", "egg", "toast"], kitchen: ["coffee", "egg", "toast"] };
-const ORDER_POOL = [
-  { item: "berry3", reward: 12, face: "👩🏻" }, { item: "egg3", reward: 13, face: "👨🏽" }, { item: "leaf2", reward: 11, face: "👩🏼" },
-  { item: "coffee3", reward: 16, face: "👨🏻" }, { item: "toast2", reward: 10, face: "👵🏻" }, { item: "berry4", reward: 30, face: "🧑🏾" },
-  { item: "egg4", reward: 32, face: "👩🏾" }, { item: "leaf3", reward: 25, face: "🧔🏻" }, { item: "toast3", reward: 20, face: "👩🏽" }
-];
-
+/* Personal, offline-only implementation. No account, purchase, ad, or server calls. */
+const DATA = window.MERGE_COOKING_DATA;
+const COLS = 6;
+const ROWS = 8;
+const KEY = "merge-cooking-offline-first-stage-v2";
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
 const statusNode = document.querySelector("#status");
 let selected = null;
-let dragIndex = null;
 
-function emptyState() {
-  const board = Array(WIDTH * HEIGHT).fill(null);
-  ["berry", "berry", "egg", "egg", "leaf", "toast", "coffee"].forEach((item, i) => board[[9, 10, 15, 16, 22, 28, 30][i]] = item);
-  return { board, storage: [], coins: 0, renovation: 0, orders: [newOrder(), newOrder(), newOrder()] };
+const nextItem = Object.fromEntries(Object.values(DATA.chains).flatMap(chain =>
+  chain.slice(0, -1).map((id, index) => [id, chain[index + 1]])
+));
+const customerFaces = ["👩🏻", "👨🏽", "👩🏾", "🧑🏻", "👵🏼", "🧔🏾"];
+const stageOrders = ["cola", "cherry-juice", "strawberry-juice", "apple-juice", "lemon-juice", "orange-juice", "strawberry-apple-juice", "strawberry-lemon-juice"];
+const generatorSlots = {
+  "drink-generator": { name: "음료 생성기", art: "🥤", level: 6 },
+  "fruit-nut-generator": { name: "과일 & 견과 생성기", art: "🍓", level: 6 }
+};
+const stations = {
+  juicer: { name: "주서기", art: "🍹" },
+  "chef-counter": { name: "셰프 카운터", art: "👨🏻‍🍳" }
+};
+
+function emptyBoard() {
+  const board = Array(COLS * ROWS).fill(null);
+  board[1] = { kind: "generator", id: "fruit-nut-generator" };
+  board[4] = { kind: "generator", id: "drink-generator" };
+  board[37] = { kind: "station", id: "juicer", ingredients: [] };
+  board[40] = { kind: "station", id: "chef-counter", ingredients: [] };
+  board[31] = { kind: "locked", level: 3 };
+  board[34] = { kind: "locked", level: 4 };
+  [[7, "cherry"], [8, "cherry"], [13, "water"], [14, "water"], [19, "strawberry"], [25, "sesame"]]
+    .forEach(([index, item]) => { board[index] = { kind: "item", id: item }; });
+  return board;
 }
-function load() { try { const parsed = JSON.parse(localStorage.getItem(KEY)); return parsed?.board?.length === WIDTH * HEIGHT ? parsed : emptyState(); } catch { return emptyState(); } }
+function id() { return crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`; }
+function freshOrder() {
+  const item = stageOrders[Math.floor(Math.random() * stageOrders.length)];
+  return { id: id(), item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
+}
+function initialState() {
+  return { version: 2, level: 2, coins: 8, gems: 100, board: emptyBoard(), storage: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
+}
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY));
+    if (saved?.version === 2 && saved.board?.length === COLS * ROWS) return saved;
+  } catch { /* start with a clean offline state */ }
+  return initialState();
+}
 let state = load();
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
-function random(list) { return list[Math.floor(Math.random() * list.length)]; }
-function newOrder() { return { ...random(ORDER_POOL), id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}` }; }
+function dataItem(item) { return DATA.items[item] || [item, "❔"]; }
+function name(item) { return dataItem(item)[0]; }
+function art(item) { return dataItem(item)[1]; }
+function chainRank(item) { return Object.values(DATA.chains).find(chain => chain.includes(item))?.indexOf(item) + 1 || 1; }
 function setStatus(message) { statusNode.textContent = message; }
-function art(item) { return ITEMS[item]?.[0] ?? "❔"; }
-function label(item) { return ITEMS[item]?.[1] ?? "알 수 없는 재료"; }
+function emptyIndex() { return state.board.findIndex(slot => slot === null); }
+function setSelected(index) { selected = index; }
+function isItem(slot) { return slot?.kind === "item"; }
+function sameItems(left, right) {
+  return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+}
+function containsIngredients(recipe, candidate) {
+  return candidate.every(value => candidate.filter(id => id === value).length <= recipe.filter(id => id === value).length);
+}
 
-function makeTile(item, index, storage = false) {
+function tileLabel(slot) {
+  if (!slot) return "빈 칸";
+  if (slot.kind === "item") return name(slot.id);
+  if (slot.kind === "generator") return generatorSlots[slot.id].name;
+  if (slot.kind === "locked") return `레벨 ${slot.level}에서 잠금 해제`;
+  return stations[slot.id].name;
+}
+function renderSlot(slot, index, inStorage = false) {
   const node = document.querySelector("#itemTemplate").content.firstElementChild.cloneNode(true);
-  if (!item) { node.classList.add("empty"); node.disabled = true; node.setAttribute("aria-label", "빈 칸"); return node; }
-  node.dataset.item = item;
   node.dataset.index = index;
-  node.innerHTML = `<span class="item-art">${art(item)}</span><span class="item-name">${label(item)}</span>`;
-  node.setAttribute("aria-label", `${label(item)}${storage ? ", 보관함" : ""}`);
-  node.addEventListener("click", () => storage ? restoreFromStorage(index) : selectTile(index));
-  if (!storage) {
-    node.draggable = true;
-    node.addEventListener("dragstart", event => { dragIndex = index; event.dataTransfer?.setData("text/plain", String(index)); });
-    node.addEventListener("dragover", event => event.preventDefault());
-    node.addEventListener("drop", event => { event.preventDefault(); const from = dragIndex ?? Number(event.dataTransfer?.getData("text/plain")); if (Number.isInteger(from)) moveOrMerge(from, index); });
-    let start = null;
-    node.addEventListener("pointerdown", event => { start = { x: event.clientX, y: event.clientY }; });
-    node.addEventListener("pointerup", event => {
-      if (!start) return;
-      const element = document.elementFromPoint(event.clientX, event.clientY)?.closest(".tile[data-index]");
-      if (element && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 18) moveOrMerge(index, Number(element.dataset.index));
-      start = null;
-    });
+  if (!slot) { node.classList.add("empty"); node.disabled = true; node.setAttribute("aria-label", "빈 칸"); return node; }
+  node.setAttribute("aria-label", tileLabel(slot));
+  if (slot.kind === "item") {
+    node.classList.add("item");
+    node.innerHTML = `<span class="item-art">${art(slot.id)}</span><span class="item-name">${name(slot.id)}</span><span class="item-level">Lv.${chainRank(slot.id)}</span>`;
+  } else if (slot.kind === "generator") {
+    const generator = generatorSlots[slot.id];
+    node.classList.add("generator-tile", slot.id);
+    node.innerHTML = `<span class="station-art">${generator.art}</span><span class="item-name">${generator.name}</span><span class="item-level">Lv.${generator.level}</span>`;
+  } else if (slot.kind === "locked") {
+    node.classList.add("locked-tile");
+    node.innerHTML = `<span class="lock-art">☁️</span><span class="locked-level">LV.${slot.level}</span>`;
+  } else {
+    const station = stations[slot.id];
+    const ingredientText = slot.ingredients.length ? slot.ingredients.map(art).join("") : "탭해 사용";
+    node.classList.add("station-tile");
+    node.innerHTML = `<span class="station-art">${station.art}</span><span class="item-name">${station.name}</span><span class="station-contents">${ingredientText}</span>`;
   }
+  node.addEventListener("click", () => inStorage ? restoreFromStorage(index) : tapSlot(index));
   return node;
 }
-function render() {
-  document.querySelector("#coins").value = state.coins;
-  document.querySelector("#coins").textContent = state.coins;
-  document.querySelector("#storageCount").textContent = state.storage.length;
-  document.querySelector("#renovationCost").textContent = 50 + state.renovation * 25;
-  boardNode.replaceChildren(...state.board.map((item, index) => makeTile(item, index)));
-  boardNode.querySelector(`[data-index="${selected}"]`)?.classList.add("selected");
-  storageNode.replaceChildren(...state.storage.map((item, index) => makeTile(item, index, true)));
+function renderOrders() {
   ordersNode.replaceChildren(...state.orders.map(order => {
-    const ready = state.board.includes(order.item) || state.storage.includes(order.item);
+    const ready = state.board.some(slot => slot?.kind === "item" && slot.id === order.item) || state.storage.some(slot => slot.id === order.item);
     const node = document.createElement("button");
-    node.type = "button"; node.className = `order${ready ? " ready" : ""}`;
-    node.innerHTML = `<span class="order-art">${art(order.item)}</span><span class="order-name">${label(order.item)}</span><span class="order-reward">+${order.reward} 🪙</span><span class="customer">${order.face}</span>`;
+    node.type = "button";
+    node.className = `order${ready ? " ready" : ""}`;
+    node.innerHTML = `<span class="order-art">${art(order.item)}</span><span class="order-name">${name(order.item)}</span><span class="order-reward">+${order.reward} 🪙</span><span class="customer">${order.face}</span>`;
     node.addEventListener("click", () => fulfillOrder(order.id));
     return node;
   }));
+}
+function render() {
+  document.querySelector("#level").textContent = state.level;
+  document.querySelector("#coins").textContent = state.coins;
+  document.querySelector("#gems").textContent = state.gems;
+  document.querySelector("#storageCount").textContent = state.storage.length;
+  boardNode.replaceChildren(...state.board.map((slot, index) => renderSlot(slot, index)));
+  boardNode.querySelector(`[data-index="${selected}"]`)?.classList.add("selected");
+  storageNode.replaceChildren(...state.storage.map((slot, index) => renderSlot(slot, index, true)));
+  renderOrders();
   save();
 }
-function selectTile(index) {
-  if (selected === null) { selected = index; setStatus(`${label(state.board[index])} 선택됨 — 같은 아이템을 탭하세요.`); }
-  else if (selected === index) { selected = null; setStatus("선택을 해제했습니다."); }
-  else { moveOrMerge(selected, index); selected = null; }
+function tapSlot(index) {
+  const slot = state.board[index];
+  if (!slot) return;
+  if (slot.kind === "generator") return produce(slot.id);
+  if (slot.kind === "locked") return setStatus(`이 칸은 레벨 ${slot.level}에서 열립니다.`);
+  if (slot.kind === "station") return useStation(index);
+  if (selected === null) {
+    setSelected(index);
+    setStatus(`${name(slot.id)} 선택됨 — 같은 재료를 탭해 병합하거나 주서기를 탭하세요.`);
+  } else if (selected === index) {
+    selected = null;
+    setStatus("선택을 해제했습니다.");
+  } else {
+    moveOrMerge(selected, index);
+  }
   render();
 }
 function moveOrMerge(from, to) {
-  if (from === to || !state.board[from]) return;
-  const a = state.board[from], b = state.board[to];
-  if (!b) { state.board[to] = a; state.board[from] = null; setStatus(`${label(a)}을(를) 옮겼습니다.`); }
-  else if (a === b && NEXT[a]) { state.board[to] = NEXT[a]; state.board[from] = null; setStatus(`${label(a)} + ${label(b)} → ${label(NEXT[a])}!`); navigator.vibrate?.(15); }
-  else setStatus("같은 아이템끼리만 병합할 수 있습니다.");
-  selected = null; render();
+  const source = state.board[from];
+  const target = state.board[to];
+  if (!isItem(source) || from === to) return;
+  if (!target) {
+    state.board[to] = source;
+    state.board[from] = null;
+    setStatus(`${name(source.id)}을(를) 옮겼습니다.`);
+  } else if (isItem(target) && source.id === target.id && nextItem[source.id]) {
+    const result = nextItem[source.id];
+    state.board[to] = { kind: "item", id: result };
+    state.board[from] = null;
+    setStatus(`${name(source.id)} + ${name(source.id)} → ${name(result)}!`);
+    navigator.vibrate?.(15);
+  } else {
+    setStatus("같은 아이템끼리만 병합할 수 있습니다.");
+  }
+  selected = null;
 }
-function produce(type) {
-  const index = state.board.findIndex(item => item === null);
-  if (index < 0) return setStatus("보드가 가득 찼습니다. 아이템을 병합하거나 냉장 보관하세요.");
-  const item = random(GENERATORS[type]); state.board[index] = item; setStatus(`${label(item)}이(가) 나왔습니다.`); render();
+function produce(generatorId) {
+  const target = emptyIndex();
+  if (target < 0) return setStatus("보드가 가득 찼습니다. 아이템을 병합하거나 보관하세요.");
+  const generator = DATA.generators[generatorId];
+  const level = generatorSlots[generatorId].level;
+  const output = generator.outputs[level];
+  const item = output[Math.floor(Math.random() * output.length)];
+  state.board[target] = { kind: "item", id: item };
+  selected = null;
+  setStatus(`${generator.title}에서 ${name(item)}이(가) 나왔습니다.`);
+  navigator.vibrate?.(10);
+  render();
 }
-function fulfillOrder(id) {
-  const orderIndex = state.orders.findIndex(order => order.id === id);
-  const order = state.orders[orderIndex];
-  const boardIndex = state.board.findIndex(item => item === order.item);
-  const storageIndex = state.storage.findIndex(item => item === order.item);
+function useStation(index) {
+  const station = state.board[index];
+  if (station.id === "chef-counter") return setStatus("셰프 카운터는 다음 공개 자료 검증 단계에서 연결합니다.");
+  if (selected === null || !isItem(state.board[selected])) return setStatus("주스 재료를 먼저 선택한 뒤 주서기를 탭하세요.");
+  const ingredient = state.board[selected].id;
+  const candidate = [...station.ingredients, ingredient];
+  const recipes = DATA.recipes.juicer;
+  const isPossible = recipes.some(([, ingredients]) => candidate.length <= ingredients.length && containsIngredients(ingredients, candidate));
+  if (!isPossible) return setStatus(`${name(ingredient)}은(는) 현재 주서기 조합에 넣을 수 없습니다.`);
+  const outputIndex = emptyIndex();
+  if (outputIndex < 0) return setStatus("완성 주스를 놓을 빈 칸이 필요합니다.");
+  state.board[selected] = null;
+  station.ingredients = candidate;
+  selected = null;
+  const completed = recipes.find(([, ingredients]) => sameItems(ingredients, candidate));
+  if (completed) {
+    state.board[outputIndex] = { kind: "item", id: completed[0] };
+    station.ingredients = [];
+    setStatus(`${name(completed[0])} 완성!`);
+    navigator.vibrate?.([15, 30, 15]);
+  } else {
+    setStatus(`${name(ingredient)}을(를) 넣었습니다. 재료를 더 넣으세요.`);
+  }
+  render();
+}
+function fulfillOrder(orderId) {
+  const index = state.orders.findIndex(order => order.id === orderId);
+  const order = state.orders[index];
+  const boardIndex = state.board.findIndex(slot => slot?.kind === "item" && slot.id === order.item);
+  const storageIndex = state.storage.findIndex(slot => slot.id === order.item);
   if (boardIndex >= 0) state.board[boardIndex] = null;
   else if (storageIndex >= 0) state.storage.splice(storageIndex, 1);
-  else return setStatus(`${label(order.item)}이(가) 아직 준비되지 않았습니다.`);
-  state.coins += order.reward; state.orders[orderIndex] = newOrder();
-  setStatus(`주문 완료! 코인 ${order.reward}개를 받았습니다.`); navigator.vibrate?.([15, 35, 15]); render();
+  else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다.`);
+  state.coins += order.reward;
+  state.orders[index] = freshOrder();
+  setStatus(`주문 완료! 코인 ${order.reward}개를 받았습니다.`);
+  navigator.vibrate?.([15, 35, 15]);
+  render();
 }
 function storeSelected() {
-  if (selected === null || !state.board[selected]) return setStatus("보관할 아이템을 먼저 선택하세요.");
-  if (state.storage.length >= 8) return setStatus("냉장 보관함이 가득 찼습니다.");
-  state.storage.push(state.board[selected]); state.board[selected] = null; selected = null; setStatus("냉장 보관함에 넣었습니다."); render();
+  if (selected === null || !isItem(state.board[selected])) return setStatus("보관할 아이템을 먼저 선택하세요.");
+  if (state.storage.length >= 8) return setStatus("보관함이 가득 찼습니다.");
+  state.storage.push(state.board[selected]);
+  state.board[selected] = null;
+  selected = null;
+  setStatus("보관함에 넣었습니다.");
+  render();
 }
 function restoreFromStorage(index) {
-  const target = state.board.findIndex(item => item === null);
+  const target = emptyIndex();
   if (target < 0) return setStatus("보드에 빈 칸이 필요합니다.");
-  state.board[target] = state.storage[index]; state.storage.splice(index, 1); setStatus("보드로 되돌렸습니다."); render();
+  state.board[target] = state.storage[index];
+  state.storage.splice(index, 1);
+  setStatus("보드로 되돌렸습니다.");
+  render();
 }
-function renovate() {
-  const cost = 50 + state.renovation * 25;
-  if (state.coins < cost) return setStatus(`개조에는 코인 ${cost}개가 필요합니다.`);
-  state.coins -= cost; state.renovation += 1; setStatus(`식당을 ${state.renovation}단계 개조했습니다!`); render();
-}
-document.querySelectorAll("[data-generator]").forEach(button => button.addEventListener("click", () => produce(button.dataset.generator)));
-document.querySelector("#storageButton").addEventListener("click", () => { if (selected !== null) storeSelected(); else document.querySelector("#storagePanel").hidden = false; });
-document.querySelector("#closeStorage").addEventListener("click", () => document.querySelector("#storagePanel").hidden = true);
-document.querySelector("#renovateButton").addEventListener("click", renovate);
-document.querySelector("#resetButton").addEventListener("click", () => { if (confirm("모든 오프라인 진행도를 초기화할까요?")) { state = emptyState(); selected = null; setStatus("새 게임을 시작했습니다."); render(); } });
+
+document.querySelector("#storageButton").addEventListener("click", () => {
+  if (selected !== null) storeSelected();
+  else document.querySelector("#storagePanel").hidden = false;
+});
+document.querySelector("#closeStorage").addEventListener("click", () => { document.querySelector("#storagePanel").hidden = true; });
+document.querySelector("#resetButton").addEventListener("click", () => {
+  if (confirm("이 기기의 오프라인 진행도를 초기화할까요?")) {
+    state = initialState();
+    selected = null;
+    setStatus("첫 번째 레스토랑을 다시 시작합니다.");
+    render();
+  }
+});
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
 render();
