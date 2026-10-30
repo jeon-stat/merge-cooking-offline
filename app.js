@@ -35,6 +35,23 @@ let stageIndexForOrders = 0;
 let dragStart = null;
 let suppressNextClick = false;
 
+function finishDrag(clientX, clientY) {
+  if (!dragStart) return;
+  const from = dragStart.index;
+  const moved = Math.hypot(clientX - dragStart.x, clientY - dragStart.y) > 10;
+  dragStart = null;
+  if (!moved) return;
+  const target = document.elementFromPoint(clientX, clientY)?.closest?.(".tile");
+  const to = target ? Number(target.dataset.index) : -1;
+  if (Number.isInteger(to) && to >= 0 && from !== to) {
+    suppressNextClick = true;
+    moveOrMerge(from, to);
+    render();
+  }
+}
+document.addEventListener("pointerup", event => finishDrag(event.clientX, event.clientY), true);
+document.addEventListener("mouseup", event => finishDrag(event.clientX, event.clientY), true);
+
 function emptyBoard() {
   const board = Array(COLS * ROWS).fill(null);
   board[1] = { kind: "generator", id: "fruit-nut-generator" };
@@ -131,20 +148,7 @@ function renderSlot(slot, index, inStorage = false) {
   node.addEventListener("pointerdown", event => {
     if (inStorage || !slot || slot.kind !== "item") return;
     dragStart = { index, x: event.clientX, y: event.clientY };
-    node.setPointerCapture?.(event.pointerId);
   });
-  node.addEventListener("pointerup", event => {
-    if (inStorage || !dragStart) return;
-    const moved = Math.hypot(event.clientX - dragStart.x, event.clientY - dragStart.y) > 10;
-    const from = dragStart.index;
-    dragStart = null;
-    if (moved && from !== index) {
-      suppressNextClick = true;
-      moveOrMerge(from, index);
-      render();
-    }
-  });
-  node.addEventListener("pointercancel", () => { dragStart = null; });
   node.addEventListener("click", () => {
     if (suppressNextClick) { suppressNextClick = false; return; }
     inStorage ? restoreFromStorage(index) : tapSlot(index);
