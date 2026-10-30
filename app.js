@@ -53,7 +53,7 @@ const contentUnlockLabels = {
   "tourist-bag": "관광객 가방",
   "french-recipe-book": "프랑스 레시피 북",
   "collection-catalog": "컬렉션 카탈로그",
-  "japanese-attractions": "일본 명소",
+  "japanese-attractions": "일본의 매력",
   "japanese-recipe-book": "일본 레시피 북"
 };
 const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", poultry: "가금류·달걀", pork: "돼지·양고기", beef: "소고기 파생품", vegetable: "채소", leafy: "잎채소", grain: "곡물", dough: "반죽 파생품", fish: "어류", shellfish: "패류", bamboo: "대나무 제품", fox: "여우 기념품", musselProducts: "홍합 파생품" };
