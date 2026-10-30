@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 21;
+const STATE_VERSION = 22;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -134,9 +134,14 @@ function migrateState(saved) {
   const currentPool = new Set(DATA.stageOrders?.[currentStageId] || []);
   const ordersNeedRefresh = migrated.orders.length !== 3 || migrated.orders.some(order => !order || !order.id || order.stageId !== currentStageId || !currentPool.has(order.item));
   if (ordersNeedRefresh) migrated.orders = [freshOrder(stageIndex), freshOrder(stageIndex), freshOrder(stageIndex)];
-  const normalizeStation = slot => slot?.kind === "station" ? { ...slot, level: slot.level || 1, ingredients: Array.isArray(slot.ingredients) ? slot.ingredients : [] } : slot;
-  migrated.board = migrated.board.map(normalizeStation);
-  migrated.storage = migrated.storage.map(normalizeStation);
+  const normalizeSlot = slot => {
+    if (!slot) return slot;
+    if (slot.kind === "station") return { ...slot, level: slot.level || 1, ingredients: Array.isArray(slot.ingredients) ? slot.ingredients : [] };
+    if (slot.kind === "item" && DATA.generators?.[slot.id]) return { kind: "generator", id: slot.id, level: slot.level || generatorSlots[slot.id]?.level || 1 };
+    return slot;
+  };
+  migrated.board = migrated.board.map(normalizeSlot);
+  migrated.storage = migrated.storage.map(normalizeSlot);
   if (stageIndex >= 2) {
     const upgradeGrain = slot => slot?.kind === "generator" && slot.id === "grain-generator" && (slot.level || 1) < 7
       ? { ...slot, level: 7 }
@@ -206,6 +211,11 @@ function drainPendingUnlocks() {
 function dataItem(item) { return DATA.items[item] || [item, "❔"]; }
 function name(item) { return dataItem(item)[0]; }
 function art(item) { return dataItem(item)[1]; }
+function slotForOutput(item) {
+  if (stations[item]) return { kind: "station", id: item, level: 1, ingredients: [] };
+  if (DATA.generators?.[item]) return { kind: "generator", id: item, level: generatorSlots[item]?.level || 1 };
+  return { kind: "item", id: item };
+}
 function chainRank(item) { return Object.values(DATA.chains).find(chain => chain.includes(item))?.indexOf(item) + 1 || 1; }
 function generatorMaxLevel(generatorId) {
   const levels = Object.keys(DATA.generators?.[generatorId]?.outputs || {}).map(Number).filter(Number.isFinite);
@@ -288,7 +298,7 @@ function renderSlot(slot, index, inStorage = false) {
 }
 function renderOrders() {
   ordersNode.replaceChildren(...state.orders.map(order => {
-    const ready = state.board.some(slot => slot?.kind === "item" && slot.id === order.item) || state.storage.some(slot => slot.id === order.item);
+    const ready = state.board.some(slot => slot?.id === order.item && slot.kind !== "station") || state.storage.some(slot => slot?.id === order.item && slot.kind !== "station");
     const node = document.createElement("button");
     node.type = "button";
     node.className = `order${ready ? " ready" : ""}`;
@@ -458,9 +468,7 @@ function produce(generatorId, sourceIndex) {
   const output = generator.outputs[level] || generator.outputs[availableLevels[0]];
   if (!output?.length) return setStatus(`${generator.title}의 공개 출력 데이터가 없습니다.`);
   const item = output[Math.floor(Math.random() * output.length)];
-  state.board[target] = stations[item]
-    ? { kind: "station", id: item, ingredients: [] }
-    : { kind: "item", id: item };
+  state.board[target] = slotForOutput(item);
   selected = null;
   setStatus(`${generator.title}에서 ${name(item)}이(가) 나왔습니다.`);
   navigator.vibrate?.(10);
@@ -481,9 +489,7 @@ function useStation(index) {
   selected = null;
   const completed = recipes.find(([, ingredients]) => sameItems(ingredients, candidate));
   if (completed) {
-    state.board[outputIndex] = DATA.generators?.[completed[0]]
-      ? { kind: "generator", id: completed[0], level: generatorSlots[completed[0]].level }
-      : { kind: "item", id: completed[0] };
+    state.board[outputIndex] = slotForOutput(completed[0]);
     station.ingredients = [];
     setStatus(`${name(completed[0])} 완성!`);
     navigator.vibrate?.([15, 30, 15]);
@@ -496,8 +502,8 @@ function fulfillOrder(orderId) {
   const index = state.orders.findIndex(order => order.id === orderId);
   const order = state.orders[index];
   if (!order) return setStatus("해당 주문을 찾을 수 없습니다. 주문 목록을 새로 고쳤습니다.");
-  const boardIndex = state.board.findIndex(slot => slot?.kind === "item" && slot.id === order.item);
-  const storageIndex = state.storage.findIndex(slot => slot.id === order.item);
+  const boardIndex = state.board.findIndex(slot => slot?.id === order.item && slot.kind !== "station");
+  const storageIndex = state.storage.findIndex(slot => slot?.id === order.item && slot.kind !== "station");
   if (boardIndex >= 0) state.board[boardIndex] = null;
   else if (storageIndex >= 0) state.storage.splice(storageIndex, 1);
   else return setStatus(`${name(order.item)}이(가) 아직 준비되지 않았습니다. ${recipeHint(order.item)}`);
@@ -527,7 +533,8 @@ function renovateStage() {
   render();
 }
 function storeSelected() {
-  if (selected === null || !isItem(state.board[selected])) return setStatus("보관할 아이템을 먼저 선택하세요.");
+  const selectedSlot = selected === null ? null : state.board[selected];
+  if (selected === null || !isRecipeInput(selectedSlot)) return setStatus("보관할 아이템을 먼저 선택하세요.");
   if (state.storage.length >= 8) return setStatus("보관함이 가득 찼습니다.");
   state.storage.push(state.board[selected]);
   state.board[selected] = null;
