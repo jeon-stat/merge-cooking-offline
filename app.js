@@ -9,7 +9,9 @@ const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
 const statusNode = document.querySelector("#status");
 const journalStagesNode = document.querySelector("#journalStages");
+const catalogContentNode = document.querySelector("#catalogContent");
 let selected = null;
+let catalogMode = "chains";
 
 const nextItem = Object.fromEntries(Object.values(DATA.chains).flatMap(chain =>
   chain.slice(0, -1).map((id, index) => [id, chain[index + 1]])
@@ -40,6 +42,7 @@ const contentUnlockLabels = {
   "japanese-attractions": "일본 명소",
   "japanese-recipe-book": "일본 레시피 북"
 };
+const chainLabels = { fruit: "과일", nut: "견과", softDrink: "소프트 드링크", coffee: "커피", fish: "어류", shellfish: "패류" };
 let stageIndexForOrders = 0;
 let dragStart = null;
 let suppressNextClick = false;
@@ -221,6 +224,28 @@ function renderJournal() {
     return node;
   }));
 }
+function renderCatalog() {
+  if (!catalogContentNode) return;
+  if (catalogMode === "chains") {
+    catalogContentNode.replaceChildren(...Object.entries(DATA.chains).map(([key, chain]) => {
+      const card = document.createElement("article");
+      card.className = "catalog-card";
+      const source = Object.entries(DATA.generators).find(([, generator]) => Object.values(generator.outputs).some(output => output.some(item => chain.includes(item))));
+      card.innerHTML = `<strong>${chainLabels[key] || key}</strong><span class="catalog-source">${source ? source[1].title : "병합 체인"}</span><p>${chain.map(item => `${art(item)} ${name(item)}`).join(" → ")}</p>`;
+      return card;
+    }));
+    return;
+  }
+  catalogContentNode.replaceChildren(...Object.entries(DATA.recipes).map(([stationId, recipes]) => {
+    const unlocked = state.unlockedContent?.includes(stationId) || state.board.some(slot => slot?.id === stationId) || state.storage.some(slot => slot?.id === stationId);
+    const card = document.createElement("article");
+    card.className = `catalog-card recipe-card${unlocked ? "" : " locked"}`;
+    const stationName = stations[stationId]?.name || stationId;
+    const rows = recipes.map(([output, ingredients]) => `<li><strong>${art(output)} ${name(output)}</strong><span>${ingredients.map(item => `${art(item)} ${name(item)}`).join(" + ")}</span></li>`).join("");
+    card.innerHTML = `<strong>${unlocked ? "🍳" : "🔒"} ${stationName}</strong>${unlocked ? `<ul>${rows}</ul>` : "<p>현재 스테이지에서 잠긴 조리기구입니다.</p>"}`;
+    return card;
+  }));
+}
 function render() {
   drainPendingUnlocks();
   document.querySelector("#level").textContent = state.level;
@@ -242,6 +267,7 @@ function render() {
   storageNode.replaceChildren(...state.storage.map((slot, index) => renderSlot(slot, index, true)));
   renderOrders();
   renderJournal();
+  if (!document.querySelector("#catalogPanel")?.hidden) renderCatalog();
   save();
 }
 function tapSlot(index) {
@@ -387,6 +413,24 @@ document.querySelector("#journalButton")?.addEventListener("click", () => {
   renderJournal();
 });
 document.querySelector("#closeJournal")?.addEventListener("click", () => { document.querySelector("#journalPanel").hidden = true; });
+document.querySelector("#openCatalog")?.addEventListener("click", () => {
+  document.querySelector("#journalPanel").hidden = true;
+  document.querySelector("#catalogPanel").hidden = false;
+  renderCatalog();
+});
+document.querySelector("#closeCatalog")?.addEventListener("click", () => { document.querySelector("#catalogPanel").hidden = true; });
+document.querySelector("#catalogChains")?.addEventListener("click", () => {
+  catalogMode = "chains";
+  document.querySelector("#catalogChains").classList.add("active");
+  document.querySelector("#catalogRecipes").classList.remove("active");
+  renderCatalog();
+});
+document.querySelector("#catalogRecipes")?.addEventListener("click", () => {
+  catalogMode = "recipes";
+  document.querySelector("#catalogRecipes").classList.add("active");
+  document.querySelector("#catalogChains").classList.remove("active");
+  renderCatalog();
+});
 document.querySelector("#renovateButton")?.addEventListener("click", renovateStage);
 document.querySelector("#closeStorage").addEventListener("click", () => { document.querySelector("#storagePanel").hidden = true; });
 document.querySelector("#resetButton").addEventListener("click", () => {
