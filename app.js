@@ -350,7 +350,15 @@ function tapSlot(index) {
     return;
   }
   if (slot.kind === "generator") return produce(slot.id, index);
-  if (slot.kind === "item" && DATA.generators?.[slot.id]) return produce(slot.id, index);
+  if (slot.kind === "item" && DATA.generators?.[slot.id]) {
+    if (selected === null) {
+      setSelected(index);
+      setStatus(`${name(slot.id)} 선택됨 — 같은 칸을 다시 탭하면 파생 재료를 생성합니다.`);
+      render();
+      return;
+    }
+    if (selected === index) return produce(slot.id, index);
+  }
   if (slot.kind === "locked") return setStatus(`이 칸은 레벨 ${slot.level}에서 열립니다.`);
   if (slot.kind === "station") return useStation(index);
   if (selected === null) {
