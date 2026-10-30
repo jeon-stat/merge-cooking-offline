@@ -1,7 +1,7 @@
 /* Personal, offline-only implementation. No account, purchase, ad, or server calls. */
 const DATA = window.MERGE_COOKING_DATA;
-const COLS = 6;
-const ROWS = 8;
+const COLS = 7;
+const ROWS = 9;
 const KEY = "merge-cooking-offline-first-stage-v2";
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
@@ -27,11 +27,11 @@ function emptyBoard() {
   const board = Array(COLS * ROWS).fill(null);
   board[1] = { kind: "generator", id: "fruit-nut-generator" };
   board[4] = { kind: "generator", id: "drink-generator" };
-  board[37] = { kind: "station", id: "juicer", ingredients: [] };
-  board[40] = { kind: "station", id: "chef-counter", ingredients: [] };
+  board[44] = { kind: "station", id: "juicer", ingredients: [] };
+  board[46] = { kind: "station", id: "chef-counter", ingredients: [] };
   board[31] = { kind: "locked", level: 3 };
-  board[34] = { kind: "locked", level: 4 };
-  [[7, "cherry"], [8, "cherry"], [13, "water"], [14, "water"], [19, "strawberry"], [25, "sesame"]]
+  board[38] = { kind: "locked", level: 4 };
+  [[8, "cherry"], [9, "cherry"], [16, "water"], [17, "water"], [23, "strawberry"], [29, "sesame"]]
     .forEach(([index, item]) => { board[index] = { kind: "item", id: item }; });
   return board;
 }
@@ -41,12 +41,12 @@ function freshOrder() {
   return { id: id(), item, reward: 5 + Math.max(1, chainRank(item)) * 2, face: customerFaces[Math.floor(Math.random() * customerFaces.length)] };
 }
 function initialState() {
-  return { version: 3, level: 35, coins: 101, gems: 20, board: emptyBoard(), storage: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
+  return { version: 4, level: 35, coins: 101, gems: 20, board: emptyBoard(), storage: [], orders: [freshOrder(), freshOrder(), freshOrder()] };
 }
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY));
-    if (saved?.version === 3 && saved.board?.length === COLS * ROWS) return saved;
+    if (saved?.version === 4 && saved.board?.length === COLS * ROWS) return saved;
   } catch { /* start with a clean offline state */ }
   return initialState();
 }
