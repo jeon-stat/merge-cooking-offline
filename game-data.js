@@ -83,6 +83,10 @@ window.MERGE_COOKING_DATA = Object.freeze({
     "fruit-juice-bar": Object.freeze(["cola", "cherry-juice", "strawberry-juice", "apple-juice", "lemon-juice", "orange-juice", "strawberry-apple-juice"]),
     "takeout-paradise": Object.freeze(["grilled-chicken-wing", "fried-broccoli", "potato-strips", "banana-split"]),
     "incrabible-grill": Object.freeze(["baked-burger-bun", "baked-hot-dog-bun", "apple-pie", "banana-pie"]),
-    "food-express": Object.freeze(["pork-burger", "potato-salad", "fried-chicken"])
+    "food-express": Object.freeze(["pork-burger", "potato-salad", "fried-chicken"]),
+    "epic-chicken": Object.freeze(["fried-chicken", "grilled-chicken-breast", "grilled-beef-ribs", "fried-ham"]),
+    "taste-of-aloha": Object.freeze(["banana-split", "wine", "tangerine-wine", "pineapple-juice"]),
+    "wild-west-saloon": Object.freeze(["wine", "fried-broccoli", "potato-salad", "apple-juice"]),
+    "bon-appetit": Object.freeze(["apple-pie", "banana-pie", "toast", "pork-burger"])
   })
 });
