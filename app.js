@@ -32,6 +32,8 @@ const stations = {
   pot: { name: "조리 냄비", art: "🍲" }
 };
 let stageIndexForOrders = 0;
+let dragStart = null;
+let suppressNextClick = false;
 
 function emptyBoard() {
   const board = Array(COLS * ROWS).fill(null);
@@ -126,7 +128,27 @@ function renderSlot(slot, index, inStorage = false) {
     node.classList.add("station-tile");
     node.innerHTML = `<span class="station-art">${station.art}</span><span class="item-name">${station.name}</span><span class="station-contents">${ingredientText}</span>`;
   }
-  node.addEventListener("click", () => inStorage ? restoreFromStorage(index) : tapSlot(index));
+  node.addEventListener("pointerdown", event => {
+    if (inStorage || !slot || slot.kind !== "item") return;
+    dragStart = { index, x: event.clientX, y: event.clientY };
+    node.setPointerCapture?.(event.pointerId);
+  });
+  node.addEventListener("pointerup", event => {
+    if (inStorage || !dragStart) return;
+    const moved = Math.hypot(event.clientX - dragStart.x, event.clientY - dragStart.y) > 10;
+    const from = dragStart.index;
+    dragStart = null;
+    if (moved && from !== index) {
+      suppressNextClick = true;
+      moveOrMerge(from, index);
+      render();
+    }
+  });
+  node.addEventListener("pointercancel", () => { dragStart = null; });
+  node.addEventListener("click", () => {
+    if (suppressNextClick) { suppressNextClick = false; return; }
+    inStorage ? restoreFromStorage(index) : tapSlot(index);
+  });
   return node;
 }
 function renderOrders() {

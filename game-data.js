@@ -8,6 +8,9 @@
  * - https://w.atwiki.jp/mergecooking/pages/32.html (juicer recipes)
  * - https://w.atwiki.jp/merge_cooking/pages/16.html (drink generator outputs)
  * - https://w.atwiki.jp/mergecooking/pages/30.html (fruit & nut generator outputs)
+ * - https://w.atwiki.jp/mergecooking/pages/33.html (oven recipes)
+ * - https://w.atwiki.jp/mergecooking/pages/35.html (shaker recipes)
+ * - https://w.atwiki.jp/mergecooking/pages/30.html (cooking pot recipes)
  */
 window.MERGE_COOKING_DATA = Object.freeze({
   target: Object.freeze({
@@ -21,6 +24,9 @@ window.MERGE_COOKING_DATA = Object.freeze({
     drinkGenerator: "https://w.atwiki.jp/merge_cooking/pages/16.html",
     fruitGenerator: "https://w.atwiki.jp/merge_cooking/pages/30.html",
     stage: "https://w.atwiki.jp/mergecooking/pages/37.html",
+    oven: "https://w.atwiki.jp/mergecooking/pages/33.html",
+    shaker: "https://w.atwiki.jp/mergecooking/pages/35.html",
+    pot: "https://w.atwiki.jp/mergecooking/pages/30.html",
     video: "https://www.youtube.com/watch?v=YCke1icPTKU"
   }),
   firstStage: Object.freeze({
@@ -37,7 +43,11 @@ window.MERGE_COOKING_DATA = Object.freeze({
     Object.freeze({ id: "epic-chicken", name: "Epic Chicken", country: "미국", unlocks: Object.freeze([]), focus: "fried chicken, beef" }),
     Object.freeze({ id: "taste-of-aloha", name: "Taste of Aloha", country: "미국", unlocks: Object.freeze(["alcohol-generator", "shaker"]), focus: "mixed drinks, tropical fruit" }),
     Object.freeze({ id: "wild-west-saloon", name: "Wild West Saloon", country: "미국", unlocks: Object.freeze([]), focus: "greens, mushrooms, wine" }),
-    Object.freeze({ id: "bon-appetit", name: "Bon Appétit Restaurant", country: "프랑스", unlocks: Object.freeze(["french-recipe-book", "collection-catalog", "pot"]), focus: "French recipes" })
+    Object.freeze({ id: "bon-appetit", name: "Bon Appétit Restaurant", country: "프랑스", unlocks: Object.freeze(["french-recipe-book", "collection-catalog", "pot"]), focus: "French recipes" }),
+    Object.freeze({ id: "dreaming-macaron", name: "Dreaming Macaron", country: "프랑스", unlocks: Object.freeze(["french-recipe-book"]), focus: "French desserts" }),
+    Object.freeze({ id: "little-marseille", name: "Little Marseille", country: "프랑스", unlocks: Object.freeze([]), focus: "French seafood" }),
+    Object.freeze({ id: "izakaya", name: "Izakaya", country: "일본", unlocks: Object.freeze(["japanese-attractions", "japanese-recipe-book"]), focus: "Japanese dishes" }),
+    Object.freeze({ id: "sakura-wagashi", name: "Sakura & Wagashi", country: "일본", unlocks: Object.freeze([]), focus: "Japanese sweets" })
   ]),
   chains: Object.freeze({
     fruit: Object.freeze(["cherry", "strawberry", "apple", "banana", "lemon", "coconut", "orange", "pomegranate", "pear", "mango", "pineapple", "watermelon"]),
@@ -52,7 +62,7 @@ window.MERGE_COOKING_DATA = Object.freeze({
     "coffee-bean": ["커피콩", "🫘"], "ground-coffee": ["분쇄 커피", "☕"], "cup-coffee": ["컵 커피", "☕"], "mug-coffee": ["머그 커피", "☕"], "takeaway-coffee": ["테이크아웃 커피", "🥤"], "cold-brew": ["콜드브루", "🧊"], "drip-coffee": ["핸드드립 커피", "☕"], "french-press": ["프렌치프레스 커피", "☕"], "moka-pot": ["모카포트 커피", "☕"], "siphon-coffee": ["사이펀 커피", "☕"],
     "cherry-juice": ["체리 주스", "🧃"], "strawberry-juice": ["딸기 주스", "🧃"], "apple-juice": ["사과 주스", "🧃"], "banana-juice": ["바나나 주스", "🧃"], "lemon-juice": ["레몬 주스", "🧃"], "orange-juice": ["오렌지 주스", "🧃"], "pomegranate-juice": ["석류 주스", "🧃"], "pear-juice": ["배 주스", "🧃"], "mango-juice": ["망고 주스", "🧃"], "pineapple-juice": ["파인애플 주스", "🧃"], "watermelon-juice": ["수박 주스", "🧃"],
     "strawberry-apple-juice": ["딸기 사과 주스", "🧃"], "strawberry-lemon-juice": ["딸기 레몬 주스", "🧃"], "banana-orange-juice": ["바나나 오렌지 주스", "🧃"], "apple-lemon-juice": ["사과 레몬 주스", "🧃"], "pear-apple-banana-juice": ["배 사과 바나나 주스", "🧃"],
-    "chicken-wing": ["닭날개", "🍗"], "chicken-drumstick": ["닭다리", "🍗"], "chicken-breast": ["닭가슴살", "🍗"], "pork-chop": ["돼지 갈비", "🥩"], "beef-cube": ["소고기 큐브", "🥩"], "spinach": ["시금치", "🥬"], "broccoli": ["브로콜리", "🥦"], "carrot": ["당근", "🥕"], "potato": ["감자", "🥔"], "wheat-flour": ["밀가루", "🌾"], "bread-dough": ["빵 반죽", "🍞"], "toast-dough": ["토스트 반죽", "🍞"], "pie-crust": ["파이 크러스트", "🥧"], "grape": ["포도", "🍇"], "wine": ["와인", "🍷"], "tangerine-wine": ["귤 와인", "🍷"], "fish": ["생선", "🐟"], "mullet": ["숭어", "🐟"], "shrimp": ["새우", "🦐"], "tuna": ["참치", "🐟"], "shellfish": ["조개", "🦪"], "asparagus": ["아스파라거스", "🥬"], "ham": ["햄", "🍖"], "patty": ["패티", "🍔"], "beef-rib": ["소갈비", "🥩"], "burger-bun": ["버거 번", "🍔"], "hot-dog-bun": ["핫도그 번", "🌭"], "tomato": ["토마토", "🍅"], "cucumber": ["오이", "🥒"], "lettuce": ["양상추", "🥬"], "banana-split": ["바나나 스플릿", "🍨"], "fried-chicken": ["프라이드 치킨", "🍗"], "potato-salad": ["감자 샐러드", "🥗"], "fried-asparagus": ["구운 아스파라거스", "🥬"], "fried-broccoli": ["구운 브로콜리", "🥦"], "fried-ham": ["구운 햄", "🍖"], "potato-strips": ["감자 스트립", "🍟"], "grilled-chicken-wing": ["구운 닭날개", "🍗"], "grilled-chicken-breast": ["구운 닭가슴살", "🍗"], "grilled-patty": ["구운 패티", "🍔"], "grilled-beef-ribs": ["구운 소갈비", "🥩"], "baked-burger-bun": ["구운 버거 번", "🍔"], "baked-hot-dog-bun": ["구운 핫도그 번", "🌭"], "apple-pie": ["사과 파이", "🥧"], "banana-pie": ["바나나 파이", "🥧"], "toast": ["토스트", "🍞"], "tomato-slice": ["토마토 슬라이스", "🍅"], "cucumber-slice": ["오이 슬라이스", "🥒"], "pork-burger": ["포크 버거", "🍔"]
+    "chicken-wing": ["닭날개", "🍗"], "chicken-drumstick": ["닭다리", "🍗"], "chicken-breast": ["닭가슴살", "🍗"], "pork-chop": ["돼지 갈비", "🥩"], "beef-cube": ["소고기 큐브", "🥩"], "spinach": ["시금치", "🥬"], "broccoli": ["브로콜리", "🥦"], "carrot": ["당근", "🥕"], "potato": ["감자", "🥔"], "wheat-flour": ["밀가루", "🌾"], "bread-dough": ["빵 반죽", "🍞"], "toast-dough": ["토스트 반죽", "🍞"], "pie-crust": ["파이 크러스트", "🥧"], "grape": ["포도", "🍇"], "wine": ["와인", "🍷"], "tangerine-wine": ["귤 와인", "🍷"], "fish": ["생선", "🐟"], "mullet": ["숭어", "🐟"], "shrimp": ["새우", "🦐"], "tuna": ["참치", "🐟"], "shellfish": ["조개", "🦪"], "asparagus": ["아스파라거스", "🥬"], "ham": ["햄", "🍖"], "patty": ["패티", "🍔"], "beef-rib": ["소갈비", "🥩"], "burger-bun": ["버거 번", "🍔"], "hot-dog-bun": ["핫도그 번", "🌭"], "tomato": ["토마토", "🍅"], "cucumber": ["오이", "🥒"], "lettuce": ["양상추", "🥬"], "banana-split": ["바나나 스플릿", "🍨"], "fried-chicken": ["프라이드 치킨", "🍗"], "potato-salad": ["감자 샐러드", "🥗"], "fried-asparagus": ["구운 아스파라거스", "🥬"], "fried-broccoli": ["구운 브로콜리", "🥦"], "fried-ham": ["구운 햄", "🍖"], "potato-strips": ["감자 스트립", "🍟"], "grilled-chicken-wing": ["구운 닭날개", "🍗"], "grilled-chicken-breast": ["구운 닭가슴살", "🍗"], "grilled-patty": ["구운 패티", "🍔"], "grilled-beef-ribs": ["구운 소갈비", "🥩"], "baked-burger-bun": ["구운 버거 번", "🍔"], "baked-hot-dog-bun": ["구운 핫도그 번", "🌭"], "apple-pie": ["사과 파이", "🥧"], "banana-pie": ["바나나 파이", "🥧"], "toast": ["토스트", "🍞"], "tomato-slice": ["토마토 슬라이스", "🍅"], "cucumber-slice": ["오이 슬라이스", "🥒"], "pork-burger": ["포크 버거", "🍔"], "pot-au-feu": ["포토푀", "🍲"], "bouillabaisse": ["부야베스", "🍲"]
   }),
   generators: Object.freeze({
     "drink-generator": Object.freeze({
@@ -77,7 +87,8 @@ window.MERGE_COOKING_DATA = Object.freeze({
     pan: Object.freeze([["fried-asparagus", ["asparagus"]], ["fried-broccoli", ["broccoli"]], ["fried-ham", ["ham"]], ["potato-strips", ["potato"]]]),
     grill: Object.freeze([["grilled-chicken-wing", ["chicken-wing"]], ["grilled-chicken-breast", ["chicken-breast"]], ["grilled-patty", ["patty"]], ["grilled-beef-ribs", ["beef-rib"]]]),
     oven: Object.freeze([["baked-burger-bun", ["burger-bun"]], ["baked-hot-dog-bun", ["hot-dog-bun"]], ["apple-pie", ["pie-crust", "apple"]], ["banana-pie", ["pie-crust", "banana"]], ["toast", ["toast-dough"]]]),
-    "chef-counter": Object.freeze([["tomato-slice", ["tomato"]], ["cucumber-slice", ["cucumber"]], ["potato-strips", ["potato"]], ["pork-burger", ["baked-burger-bun", "grilled-patty", "lettuce", "tomato-slice"]]])
+    "chef-counter": Object.freeze([["tomato-slice", ["tomato"]], ["cucumber-slice", ["cucumber"]], ["potato-strips", ["potato"]], ["pork-burger", ["baked-burger-bun", "grilled-patty", "lettuce", "tomato-slice"]]]),
+    pot: Object.freeze([["pot-au-feu", ["beef-cube", "carrot", "potato"]], ["bouillabaisse", ["fish", "shrimp", "water"]]])
   }),
   stageOrders: Object.freeze({
     "fruit-juice-bar": Object.freeze(["cola", "cherry-juice", "strawberry-juice", "apple-juice", "lemon-juice", "orange-juice", "strawberry-apple-juice"]),
@@ -87,6 +98,10 @@ window.MERGE_COOKING_DATA = Object.freeze({
     "epic-chicken": Object.freeze(["fried-chicken", "grilled-chicken-breast", "grilled-beef-ribs", "fried-ham"]),
     "taste-of-aloha": Object.freeze(["banana-split", "wine", "tangerine-wine", "pineapple-juice"]),
     "wild-west-saloon": Object.freeze(["wine", "fried-broccoli", "potato-salad", "apple-juice"]),
-    "bon-appetit": Object.freeze(["apple-pie", "banana-pie", "toast", "pork-burger"])
+    "bon-appetit": Object.freeze(["apple-pie", "banana-pie", "toast", "pot-au-feu", "bouillabaisse"]),
+    "dreaming-macaron": Object.freeze(["apple-pie", "banana-pie", "mango-juice", "pineapple-juice"]),
+    "little-marseille": Object.freeze(["grilled-beef-ribs", "fried-broccoli", "pineapple-juice", "potato-salad"]),
+    "izakaya": Object.freeze(["apple-juice", "fried-ham", "grilled-chicken-breast", "wine"]),
+    "sakura-wagashi": Object.freeze(["strawberry-juice", "banana-pie", "apple-pie", "toast"])
   })
 });
