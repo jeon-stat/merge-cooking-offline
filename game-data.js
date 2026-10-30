@@ -38,7 +38,7 @@ window.MERGE_COOKING_DATA = Object.freeze({
   }),
   stages: Object.freeze([
     Object.freeze({ id: "fruit-juice-bar", name: "Fruity Juice Bar", country: "미국", unlocks: Object.freeze(["drink-generator", "fruit-nut-generator", "juicer", "chef-counter"]), focus: "fruit juice, coffee", source: "https://w.atwiki.jp/mergecooking/pages/37.html" }),
-    Object.freeze({ id: "takeout-paradise", name: "Takeout Paradise", country: "미국", unlocks: Object.freeze(["protein-generator", "vegetable-generator", "ship", "pan", "grill"]), focus: "grilled vegetables, meat, seafood, salads" }),
+    Object.freeze({ id: "takeout-paradise", name: "Takeout Paradise", country: "미국", unlocks: Object.freeze(["protein-generator", "vegetable-generator", "ship", "pan", "grill", "bbq-recipe-book", "glass-bowl"]), focus: "grilled vegetables, meat, seafood, salads" }),
     Object.freeze({ id: "incrabible-grill", name: "inCRABible Grill", country: "미국", unlocks: Object.freeze(["grain-generator", "oven", "tourist-bag"]), focus: "burgers, hot dogs, tarts" }),
     Object.freeze({ id: "food-express", name: "Food Express", country: "미국", unlocks: Object.freeze([]), focus: "burgers, hot dogs, salads, fried food" }),
     Object.freeze({ id: "epic-chicken", name: "Epic Chicken", country: "미국", unlocks: Object.freeze([]), focus: "fried chicken, beef" }),

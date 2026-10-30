@@ -36,6 +36,8 @@ const stations = {
   pot: { name: "조리 냄비", art: "🍲" }
 };
 const contentUnlockLabels = {
+  "bbq-recipe-book": "BBQ 레시피북",
+  "glass-bowl": "유리 그릇",
   "tourist-bag": "관광객 가방",
   "french-recipe-book": "프랑스 레시피 북",
   "collection-catalog": "컬렉션 카탈로그",
