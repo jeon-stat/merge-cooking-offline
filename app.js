@@ -3,7 +3,7 @@ const DATA = window.MERGE_COOKING_DATA;
 const COLS = 7;
 const ROWS = 9;
 const KEY = "merge-cooking-offline-public-ledger-v1";
-const STATE_VERSION = 9;
+const STATE_VERSION = 10;
 const boardNode = document.querySelector("#board");
 const storageNode = document.querySelector("#storage");
 const ordersNode = document.querySelector("#orders");
@@ -30,6 +30,17 @@ const generatorSlots = {
   "alcohol-generator": { name: "알코올 생성기", art: "🍷", level: 6 },
   "tourist-bag": { name: "관광객 가방", art: "🧳", level: 7 },
   "italian-themed-vehicle": { name: "이탈리아 테마 차량", art: "🚗", level: 7 },
+  "pasta-mold-set": { name: "파스타 몰드 세트", art: "🧰", level: 1 },
+  "pasta-mold-ravioli": { name: "라비올리 몰드", art: "🧰", level: 1 },
+  "pasta-mold-bigoli": { name: "비골리 몰드", art: "🧰", level: 1 },
+  "pasta-mold-fusilli": { name: "푸실리 몰드", art: "🧰", level: 1 },
+  "pasta-mold-farfalle": { name: "파르팔레 몰드", art: "🧰", level: 1 },
+  "pasta-mold-tagliatelle": { name: "탈리아텔레 몰드", art: "🧰", level: 1 },
+  "pasta-mold-spaghetti": { name: "스파게티 몰드", art: "🧰", level: 1 },
+  "pasta-mold-rigatoni": { name: "리가토니 몰드", art: "🧰", level: 1 },
+  "pasta-mold-penne": { name: "펜네 몰드", art: "🧰", level: 1 },
+  "pasta-mold-orecchiette": { name: "오레키에테 몰드", art: "🧰", level: 1 },
+  "pasta-mold-conchiglie": { name: "콘킬리에 몰드", art: "🧰", level: 1 },
   "japanese-attractions": { name: "일본의 매력", art: "⛩️", level: 6 },
   mussel: { name: "홍합 파생기", art: "🦪", level: 1 },
   "bamboo-stalks": { name: "대나무 장대", art: "🎋", level: 1 },
